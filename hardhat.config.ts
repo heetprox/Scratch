@@ -2,7 +2,6 @@ import type { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox-viem";
 import "dotenv/config";
 
-// Read environment variables
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
 const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || "";
