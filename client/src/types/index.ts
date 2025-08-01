@@ -10,6 +10,15 @@ export interface ScratchCard {
   payments: Payment[];
 }
 
+export interface UserData {
+  walletAddress: string;
+  username?: string;
+  email?: string;
+  createdAt?: any;
+  lastLogin?: any;
+  isActive: boolean;
+}
+
 export interface Payment {
     id: string;
     scratchCardId: string;
