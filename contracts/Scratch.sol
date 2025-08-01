@@ -15,8 +15,11 @@ contract Scratch {
 
     uint256 public platformFee = 0; // for now
     uint256 private paymentCounter;
-
     address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
 
     function sendPayment(
         address payable _recipient,
