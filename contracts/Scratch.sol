@@ -28,8 +28,9 @@ contract Scratch {
         require(msg.value > 0, "Payment must be greater than 0");
         require(_recipient != address(0), "Invalid recipient");
         require(_recipient != msg.sender, "Cannot pay yourself");
-
-        uint256 fee = (msg.value * platformFee) / 100000;
+        
+        
+        uint256 fee = (msg.value * platformFee) / 10000;
         uint256 netAmount = msg.value - fee;
 
         paymentCounter++;
@@ -60,7 +61,7 @@ contract Scratch {
 
     function updateFee(uint256 _newFee) external {
         require(msg.sender == owner, "Only owner");
-        require(_newFee <= 1000, "Max 1% fee");
+        require(_newFee <= 1000, "Max 10% fee");
         platformFee = _newFee;
     }
 
