@@ -53,7 +53,7 @@ interface Web3ProviderProps {
   children: ReactNode;
 }
 
-export function Web3Provider({ children }: Web3ProviderProps) {
+export function Provider({ children }: Web3ProviderProps) {
   const [account, setAccount] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -109,7 +109,6 @@ export function Web3Provider({ children }: Web3ProviderProps) {
         const newChainId = parseInt(chainId, 16);
         setChainId(newChainId);
         
-        // Reinitialize contract for new network
         if (provider && account) {
           initializeContract(newChainId);
         }
