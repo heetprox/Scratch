@@ -68,7 +68,6 @@ export function Web3Provider({ children }: Web3ProviderProps) {
           const ethProvider = new ethers.BrowserProvider(window.ethereum);
           setProvider(ethProvider);
 
-          // Check if already connected
           const accounts = await ethProvider.send('eth_accounts', []);
           if (accounts.length > 0) {
             setAccount(accounts[0]);
@@ -77,7 +76,6 @@ export function Web3Provider({ children }: Web3ProviderProps) {
             const network = await ethProvider.getNetwork();
             setChainId(Number(network.chainId));
             
-            // Initialize contract
             const contractAddress = getContractAddress(Number(network.chainId));
             if (contractAddress) {
               const signer = await ethProvider.getSigner();
@@ -196,8 +194,8 @@ export function Web3Provider({ children }: Web3ProviderProps) {
         params: [{ chainId: `0x${targetChainId.toString(16)}` }],
       });
     } catch (error: any) {
-      // Network doesn't exist, add it
-      if (error.code === 4902) {
+
+        if (error.code === 4902) {
         const network = SUPPORTED_NETWORKS[targetChainId as keyof typeof SUPPORTED_NETWORKS];
         if (network) {
           await window.ethereum.request({
