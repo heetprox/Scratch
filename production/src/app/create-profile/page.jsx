@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ProfileForm from '@/components/ProfileForm';
-import { CreateScratchCardParams } from '@/types';
+import ProfileForm from '../../components/ProfileForm';
 
 const CreateProfilePage = () => {
   const router = useRouter();

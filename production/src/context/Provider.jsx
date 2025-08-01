@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { ethers } from 'ethers';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
-import { SendPaymentParams, Web3ContextType } from '@/types';
 import { CONTRACT_ABI, CONTRACT_ADDRESSES, SUPPORTED_NETWORKS } from './constants';
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';

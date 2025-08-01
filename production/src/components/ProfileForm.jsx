@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useWeb3 } from '@/context/Provider';
+import { useWeb3 } from '../context/Provider';
 
 
 const ProfileForm = ({ 
