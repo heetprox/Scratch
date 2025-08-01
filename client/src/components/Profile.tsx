@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { UserService } from '@/lib/UserService';
 import { ScratchCard, Payment } from '@/types';
 import { useWeb3 } from '@/context/Provider';
+import { PaymentForm } from './PaymentForm';
 
 interface ScratchCardProfileProps {
   scratchCard: ScratchCard;
