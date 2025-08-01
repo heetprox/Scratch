@@ -12,13 +12,13 @@ export const SUPPORTED_NETWORKS = {
   1: {
     name: 'Ethereum Mainnet',
     currency: 'ETH',
-    rpcUrl: 'https://mainnet.infura.io/v3/YOUR_API_KEY',
+    rpcUrl: 'https://mainnet.infura.io/v3/e8082e718e714e858c737b39b579cbf8',
     blockExplorer: 'https://etherscan.io'
   },
   11155111: {
     name: 'Sepolia Testnet',
     currency: 'ETH',
-    rpcUrl: 'https://sepolia.infura.io/v3/YOUR_API_KEY',
+    rpcUrl: 'https://sepolia.infura.io/v3/e8082e718e714e858c737b39b579cbf8',
     blockExplorer: 'https://sepolia.etherscan.io'
   }
 } as const;
