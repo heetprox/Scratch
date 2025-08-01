@@ -56,12 +56,13 @@ export class FirebaseService {
     };
   }
   
-  // Prepare data for Firestore by converting Date objects to Timestamps
+  // Prepare data for Firestore by converting Date objects to Timestamps and sanitizing data
   private prepareForFirestore<T>(data: T): T {
     if (!data) return data;
     
     try {
-      const result = { ...data } as T;
+      // Create a deep copy to avoid modifying the original
+      const result = JSON.parse(JSON.stringify(data)) as T;
       
       // Convert Date objects to Firestore Timestamps
       if (data && typeof data === 'object' && 'timestamp' in data) {
@@ -73,11 +74,39 @@ export class FirebaseService {
         }
       }
       
+      // Sanitize the data to ensure it's Firestore compatible
+      this.sanitizeForFirestore(result);
+      
       return result;
     } catch (error) {
       console.error('Error preparing data for Firestore:', error);
       return data; // Return original data if conversion fails
     }
+  }
+  
+  // Helper method to sanitize data for Firestore
+  private sanitizeForFirestore(data: any): void {
+    if (!data || typeof data !== 'object') return;
+    
+    // Remove undefined values as Firestore doesn't accept them
+    Object.keys(data).forEach(key => {
+      if (data[key] === undefined) {
+        delete data[key];
+      } else if (data[key] === null) {
+        // Keep null values as Firestore accepts them
+      } else if (Array.isArray(data[key])) {
+        // Recursively sanitize array items
+        data[key] = data[key].map(item => {
+          if (typeof item === 'object' && item !== null) {
+            this.sanitizeForFirestore(item);
+          }
+          return item;
+        });
+      } else if (typeof data[key] === 'object') {
+        // Recursively sanitize nested objects
+        this.sanitizeForFirestore(data[key]);
+      }
+    });
   }
 
   // Convert Firestore document to Payment
@@ -98,14 +127,44 @@ export class FirebaseService {
   // ScratchCard CRUD operations
   async createScratchCard(scratchCard: Omit<ScratchCard, '_id'>): Promise<ScratchCard> {
     try {
+      // Validate input data
+      if (!scratchCard || typeof scratchCard !== 'object') {
+        throw new Error('Invalid scratch card data');
+      }
+
+      // Ensure required fields are present
+      if (!scratchCard.username) {
+        throw new Error('Username is required for scratch card');
+      }
+
+      // Log the data being sent to Firestore for debugging
+      console.log('Creating scratch card with data:', JSON.stringify(scratchCard, null, 2));
+      
       // Prepare data with error handling
       const preparedData = this.prepareForFirestore(scratchCard);
       
-      // Use retry operation utility
-      const docRef = await this.retryOperation(
-        () => addDoc(this.scratchCardsCollection, preparedData),
-        'Failed to create scratch card'
-      );
+      // Ensure WalletAddress is an array
+      if (!Array.isArray(preparedData.WalletAddress)) {
+        preparedData.WalletAddress = [];
+      }
+      
+      // Ensure payments is an array
+      if (!Array.isArray(preparedData.payments)) {
+        preparedData.payments = [];
+      }
+      
+      // Use retry operation utility with direct error handling
+      let docRef;
+      try {
+        docRef = await addDoc(this.scratchCardsCollection, preparedData);
+      } catch (addError: any) {
+        console.error('Direct addDoc error:', addError);
+        // Try again with retry mechanism
+        docRef = await this.retryOperation(
+          () => addDoc(this.scratchCardsCollection, preparedData),
+          'Failed to create scratch card'
+        );
+      }
       
       const newDoc = await getDoc(docRef);
       

@@ -1,18 +1,18 @@
 import { ScratchCard, Payment, PaymentSentEvent } from '@/types';
-import { FirebaseService } from './FirebaseService';
+import { PostgresService } from './PostgresService';
 
 export class UserService {
   private baseUrl: string;
-  private firebaseService: FirebaseService;
+  private dbService: PostgresService;
 
   constructor(baseUrl: string = '/api') {
     this.baseUrl = baseUrl;
-    this.firebaseService = new FirebaseService();
+    this.dbService = new PostgresService();
   }
 
   async createScratchCard(scratchCard: Omit<ScratchCard, '_id'>): Promise<ScratchCard> {
     try {
-      return await this.firebaseService.createScratchCard(scratchCard);
+      return await this.dbService.createScratchCard(scratchCard);
     } catch (error) {
       console.error('Error creating scratch card:', error);
       throw error;
@@ -21,7 +21,7 @@ export class UserService {
 
   async getScratchCard(id: string): Promise<ScratchCard> {
     try {
-      return await this.firebaseService.getScratchCard(id);
+      return await this.dbService.getScratchCard(id);
     } catch (error) {
       console.error('Error getting scratch card:', error);
       throw error;
@@ -30,7 +30,7 @@ export class UserService {
 
   async getScratchCardByUsername(username: string): Promise<ScratchCard> {
     try {
-      return await this.firebaseService.getScratchCardByUsername(username);
+      return await this.dbService.getScratchCardByUsername(username);
     } catch (error) {
       console.error('Error getting scratch card by username:', error);
       throw error;
@@ -39,7 +39,7 @@ export class UserService {
 
   async updateScratchCard(id: string, updates: Partial<ScratchCard>): Promise<ScratchCard> {
     try {
-      return await this.firebaseService.updateScratchCard(id, updates);
+      return await this.dbService.updateScratchCard(id, updates);
     } catch (error) {
       console.error('Error updating scratch card:', error);
       throw error;
@@ -48,7 +48,7 @@ export class UserService {
 
   async deleteScratchCard(id: string): Promise<void> {
     try {
-      await this.firebaseService.deleteScratchCard(id);
+      await this.dbService.deleteScratchCard(id);
     } catch (error) {
       console.error('Error deleting scratch card:', error);
       throw error;
@@ -57,7 +57,7 @@ export class UserService {
 
   async createPayment(payment: Omit<Payment, 'id'>): Promise<Payment> {
     try {
-      return await this.firebaseService.createPayment(payment);
+      return await this.dbService.createPayment(payment);
     } catch (error) {
       console.error('Error creating payment:', error);
       throw error;
@@ -66,7 +66,7 @@ export class UserService {
 
   async updatePayment(id: string, updates: Partial<Payment>): Promise<Payment> {
     try {
-      return await this.firebaseService.updatePayment(id, updates);
+      return await this.dbService.updatePayment(id, updates);
     } catch (error) {
       console.error('Error updating payment:', error);
       throw error;
@@ -75,7 +75,7 @@ export class UserService {
 
   async getPaymentsByScratchCard(scratchCardId: string): Promise<Payment[]> {
     try {
-      return await this.firebaseService.getPaymentsByScratchCard(scratchCardId);
+      return await this.dbService.getPaymentsByScratchCard(scratchCardId);
     } catch (error) {
       console.error('Error getting payments:', error);
       throw error;
@@ -138,7 +138,7 @@ export class UserService {
 
   async searchScratchCards(query: string): Promise<ScratchCard[]> {
     try {
-      return await this.firebaseService.searchScratchCards(query);
+      return await this.dbService.searchScratchCards(query);
     } catch (error) {
       console.error('Error searching scratch cards:', error);
       throw error;

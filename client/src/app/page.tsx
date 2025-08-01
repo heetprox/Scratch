@@ -50,26 +50,43 @@ export default function HomePage() {
       return;
     }
 
+    // Validate form fields
+    if (!createForm.username.trim()) {
+      alert('Username is required');
+      return;
+    }
+
     setIsLoading(true);
     try {
+      // Get network name and log for debugging
       const networkName = userService.getNetworkName(chainId || 1);
-      const newCard = await userService.createScratchCard({
-        username: createForm.username,
-        name: createForm.name,
-        description: createForm.description,
-        image: createForm.image,
+      console.log('Creating profile with network:', networkName, 'and address:', account);
+      
+      // Create the scratch card with validated data
+      const scratchCardData = {
+        username: createForm.username.trim(),
+        name: createForm.name.trim(),
+        description: createForm.description.trim(),
+        image: createForm.image.trim(),
         WalletAddress: [{
           network: networkName,
           address: account
         }],
         payments: []
-      });
+      };
       
+      console.log('Submitting scratch card data:', JSON.stringify(scratchCardData, null, 2));
+      
+      const newCard = await userService.createScratchCard(scratchCardData);
+      
+      console.log('Successfully created scratch card:', newCard._id);
       setScratchCard(newCard);
       setActiveTab('profile');
       setCreateForm({ username: '', name: '', description: '', image: '' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create profile:', error);
+      // Display user-friendly error message
+      alert(`Failed to create profile: ${error.message || 'Unknown error occurred'}`);
     } finally {
       setIsLoading(false);
     }

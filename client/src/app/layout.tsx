@@ -2,6 +2,23 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from "@/context/Provider";
+import { useEffect } from 'react';
+
+// Initialize database on server startup
+async function initDatabase() {
+  try {
+    const response = await fetch('/api/init-db', { cache: 'no-store' });
+    const data = await response.json();
+    console.log('Database initialization:', data);
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+  }
+}
+
+// Call database initialization on server
+if (typeof window !== 'undefined') {
+  initDatabase();
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +47,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Initialize database when the app loads on client
+  useEffect(() => {
+    initDatabase();
+  }, []);
+
   return (
     <html lang="en">
       <body
