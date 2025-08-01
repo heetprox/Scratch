@@ -1,4 +1,4 @@
-interface ScratchCard {
+export interface ScratchCard {
   _id: string;
   name: string;
   image: string;
@@ -10,7 +10,7 @@ interface ScratchCard {
   payments: Payment[];
 }
 
-interface Payment {
+export interface Payment {
     id: string;
     scratchCardId: string;
     amount: number;
