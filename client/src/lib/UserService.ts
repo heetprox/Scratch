@@ -1,27 +1,18 @@
 import { ScratchCard, Payment, PaymentSentEvent } from '@/types';
+import { FirebaseService } from './FirebaseService';
 
 export class UserService {
   private baseUrl: string;
+  private firebaseService: FirebaseService;
 
   constructor(baseUrl: string = '/api') {
     this.baseUrl = baseUrl;
+    this.firebaseService = new FirebaseService();
   }
 
   async createScratchCard(scratchCard: Omit<ScratchCard, '_id'>): Promise<ScratchCard> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(scratchCard),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create scratch card: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.createScratchCard(scratchCard);
     } catch (error) {
       console.error('Error creating scratch card:', error);
       throw error;
@@ -30,13 +21,7 @@ export class UserService {
 
   async getScratchCard(id: string): Promise<ScratchCard> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards/${id}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to get scratch card: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.getScratchCard(id);
     } catch (error) {
       console.error('Error getting scratch card:', error);
       throw error;
@@ -45,13 +30,7 @@ export class UserService {
 
   async getScratchCardByUsername(username: string): Promise<ScratchCard> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards/username/${username}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to get scratch card: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.getScratchCardByUsername(username);
     } catch (error) {
       console.error('Error getting scratch card by username:', error);
       throw error;
@@ -60,19 +39,7 @@ export class UserService {
 
   async updateScratchCard(id: string, updates: Partial<ScratchCard>): Promise<ScratchCard> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update scratch card: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.updateScratchCard(id, updates);
     } catch (error) {
       console.error('Error updating scratch card:', error);
       throw error;
@@ -81,13 +48,7 @@ export class UserService {
 
   async deleteScratchCard(id: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete scratch card: ${response.statusText}`);
-      }
+      await this.firebaseService.deleteScratchCard(id);
     } catch (error) {
       console.error('Error deleting scratch card:', error);
       throw error;
@@ -96,19 +57,7 @@ export class UserService {
 
   async createPayment(payment: Omit<Payment, 'id'>): Promise<Payment> {
     try {
-      const response = await fetch(`${this.baseUrl}/payments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payment),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create payment: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.createPayment(payment);
     } catch (error) {
       console.error('Error creating payment:', error);
       throw error;
@@ -117,19 +66,7 @@ export class UserService {
 
   async updatePayment(id: string, updates: Partial<Payment>): Promise<Payment> {
     try {
-      const response = await fetch(`${this.baseUrl}/payments/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update payment: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.updatePayment(id, updates);
     } catch (error) {
       console.error('Error updating payment:', error);
       throw error;
@@ -138,13 +75,7 @@ export class UserService {
 
   async getPaymentsByScratchCard(scratchCardId: string): Promise<Payment[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/payments/scratchcard/${scratchCardId}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to get payments: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.getPaymentsByScratchCard(scratchCardId);
     } catch (error) {
       console.error('Error getting payments:', error);
       throw error;
@@ -207,13 +138,7 @@ export class UserService {
 
   async searchScratchCards(query: string): Promise<ScratchCard[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/scratchcards/search?q=${encodeURIComponent(query)}`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to search scratch cards: ${response.statusText}`);
-      }
-
-      return await response.json();
+      return await this.firebaseService.searchScratchCards(query);
     } catch (error) {
       console.error('Error searching scratch cards:', error);
       throw error;

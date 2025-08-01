@@ -292,7 +292,7 @@ export default function HomePage() {
                     value={createForm.image}
                     onChange={(e) => setCreateForm({...createForm, image: e.target.value})}
                     placeholder="https://..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 text-black focus:ring-blue-500"
                   />
                 </div>
 
