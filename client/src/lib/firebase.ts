@@ -1,9 +1,10 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
+import { getFirestore, connectFirestoreEmulator, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, enableIndexedDbPersistence } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
+// Use environment variables for Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA8mMvbR543VDb_XcPb5xGNoPSmNcqYCPs",
   authDomain: "scratch-7508a.firebaseapp.com",
@@ -15,17 +16,33 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if it hasn't been initialized already
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Initialize Firebase services
 let analytics;
 if (typeof window !== 'undefined') {
-  // Analytics only works in the browser
   analytics = getAnalytics(app);
 }
 
+
 const db = getFirestore(app);
+  
+
 const auth = getAuth(app);
 const storage = getStorage(app);
+
+// Use Firebase emulators in development environment
+if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
+  if (typeof window !== 'undefined') {
+    try {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      connectStorageEmulator(storage, 'localhost', 9199);
+      console.log('Using Firebase emulators');
+    } catch (error) {
+      console.error('Error connecting to Firebase emulators:', error);
+    }
+  }
+}
 
 export { db, auth, storage };

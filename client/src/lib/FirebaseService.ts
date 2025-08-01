@@ -1,13 +1,49 @@
 import { db } from './firebase';
 import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, DocumentData, QueryDocumentSnapshot, Timestamp } from 'firebase/firestore';
 import { ScratchCard, Payment, PaymentSentEvent } from '@/types';
+import { getApp } from 'firebase/app';
 
 export class FirebaseService {
-  private scratchCardsCollection = collection(db, 'scratchCards');
-  private paymentsCollection = collection(db, 'payments');
+  private scratchCardsCollection;
+  private paymentsCollection;
+  private maxRetries = 3;
+  
+  constructor() {
+    try {
+      // Initialize collections
+      this.scratchCardsCollection = collection(db, 'scratchCards');
+      this.paymentsCollection = collection(db, 'payments');
+      
+      console.log('FirebaseService initialized successfully');
+    } catch (error) {
+      console.error('Error initializing FirebaseService:', error);
+      // Initialize with empty collections as fallback
+      this.scratchCardsCollection = collection(db, 'scratchCards');
+      this.paymentsCollection = collection(db, 'payments');
+    }
+  }
+  
+  // Utility method to retry Firestore operations
+  private async retryOperation<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
+    let retries = this.maxRetries;
+    
+    while (retries > 0) {
+      try {
+        return await operation();
+      } catch (err: any) {
+        retries--;
+        if (retries === 0 || !(err.code === 'unavailable' || err.code === 'resource-exhausted' || err.code === 'deadline-exceeded')) {
+          throw err; // Rethrow if not a retryable error or out of retries
+        }
+        console.warn(`Firestore operation failed, retrying (${retries} attempts left)`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before retry
+      }
+    }
+    
+    throw new Error(`${errorMessage} after multiple attempts`);
+  }
 
-  // Convert Firestore document to ScratchCard
-  private convertToScratchCard(doc: QueryDocumentSnapshot<DocumentData>): ScratchCard {
+  private convertToScratchCard(doc: QueryDocumentSnapshot<DocumentData, DocumentData>): ScratchCard {
     const data = doc.data();
     return {
       _id: doc.id,
@@ -21,19 +57,31 @@ export class FirebaseService {
   }
   
   // Prepare data for Firestore by converting Date objects to Timestamps
-  private prepareForFirestore(data: any) {
-    const result = { ...data };
+  private prepareForFirestore<T>(data: T): T {
+    if (!data) return data;
     
-    // Convert Date objects to Firestore Timestamps
-    if (data.timestamp instanceof Date) {
-      result.timestamp = Timestamp.fromDate(data.timestamp);
+    try {
+      const result = { ...data } as T;
+      
+      // Convert Date objects to Firestore Timestamps
+      if (data && typeof data === 'object' && 'timestamp' in data) {
+        if (data.timestamp instanceof Date) {
+          (result as any).timestamp = Timestamp.fromDate(data.timestamp);
+        } else if (typeof data.timestamp === 'number') {
+          // Convert number timestamp (milliseconds) to Firestore Timestamp
+          (result as any).timestamp = Timestamp.fromMillis(data.timestamp);
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error preparing data for Firestore:', error);
+      return data; // Return original data if conversion fails
     }
-    
-    return result;
   }
 
   // Convert Firestore document to Payment
-  private convertToPayment(doc: QueryDocumentSnapshot<DocumentData>): Payment {
+  private convertToPayment(doc: QueryDocumentSnapshot<DocumentData, DocumentData>): Payment {
     const data = doc.data();
     return {
       id: doc.id,
@@ -50,14 +98,22 @@ export class FirebaseService {
   // ScratchCard CRUD operations
   async createScratchCard(scratchCard: Omit<ScratchCard, '_id'>): Promise<ScratchCard> {
     try {
-      const docRef = await addDoc(this.scratchCardsCollection, this.prepareForFirestore(scratchCard));
+      // Prepare data with error handling
+      const preparedData = this.prepareForFirestore(scratchCard);
+      
+      // Use retry operation utility
+      const docRef = await this.retryOperation(
+        () => addDoc(this.scratchCardsCollection, preparedData),
+        'Failed to create scratch card'
+      );
+      
       const newDoc = await getDoc(docRef);
       
       if (!newDoc.exists()) {
         throw new Error('Failed to create scratch card');
       }
       
-      return this.convertToScratchCard(newDoc as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToScratchCard(newDoc as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error creating scratch card:', error);
       throw error;
@@ -73,7 +129,7 @@ export class FirebaseService {
         throw new Error(`Scratch card with ID ${id} not found`);
       }
       
-      return this.convertToScratchCard(docSnap as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToScratchCard(docSnap as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error getting scratch card:', error);
       throw error;
@@ -99,14 +155,19 @@ export class FirebaseService {
   async updateScratchCard(id: string, updates: Partial<ScratchCard>): Promise<ScratchCard> {
     try {
       const docRef = doc(this.scratchCardsCollection, id);
-      await updateDoc(docRef, this.prepareForFirestore(updates) as DocumentData);
+      const preparedUpdates = this.prepareForFirestore(updates) as DocumentData;
+      
+      await this.retryOperation(
+        () => updateDoc(docRef, preparedUpdates),
+        `Failed to update scratch card with ID ${id}`
+      );
       
       const updatedDoc = await getDoc(docRef);
       if (!updatedDoc.exists()) {
         throw new Error(`Scratch card with ID ${id} not found after update`);
       }
       
-      return this.convertToScratchCard(updatedDoc as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToScratchCard(updatedDoc as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error updating scratch card:', error);
       throw error;
@@ -165,12 +226,10 @@ export class FirebaseService {
     }
   }
 
-  async searchScratchCards(query: string): Promise<ScratchCard[]> {
+  async searchScratchCards(searchTerm: string): Promise<ScratchCard[]> {
     try {
-      // Firebase doesn't support text search natively, so we'll do a simple query
-      // In a production app, you might want to use Algolia or another search service
-      const nameQuery = query(this.scratchCardsCollection, where('name', '>=', query), where('name', '<=', query + '\uf8ff'));
-      const usernameQuery = query(this.scratchCardsCollection, where('username', '>=', query), where('username', '<=', query + '\uf8ff'));
+      const nameQuery = query(this.scratchCardsCollection, where('name', '>=', searchTerm), where('name', '<=', searchTerm + '\uf8ff'));
+      const usernameQuery = query(this.scratchCardsCollection, where('username', '>=', searchTerm), where('username', '<=', searchTerm + '\uf8ff'));
       
       const [nameResults, usernameResults] = await Promise.all([
         getDocs(nameQuery),
@@ -194,7 +253,6 @@ export class FirebaseService {
     }
   }
   
-  // Method to handle blockchain payment events
   async recordBlockchainPayment(paymentEvent: PaymentSentEvent, scratchCardId: string): Promise<Payment> {
     const payment: Omit<Payment, 'id'> = {
       scratchCardId,
@@ -209,17 +267,24 @@ export class FirebaseService {
     return await this.createPayment(payment);
   }
 
-  // Payment CRUD operations
   async createPayment(payment: Omit<Payment, 'id'>): Promise<Payment> {
     try {
-      const docRef = await addDoc(this.paymentsCollection, this.prepareForFirestore(payment));
+      // Prepare data with error handling
+      const preparedData = this.prepareForFirestore(payment);
+      
+      // Use retry operation utility
+      const docRef = await this.retryOperation(
+        () => addDoc(this.paymentsCollection, preparedData),
+        'Failed to create payment'
+      );
+      
       const newDoc = await getDoc(docRef);
       
       if (!newDoc.exists()) {
         throw new Error('Failed to create payment');
       }
       
-      return this.convertToPayment(newDoc as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToPayment(newDoc as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error creating payment:', error);
       throw error;
@@ -229,14 +294,19 @@ export class FirebaseService {
   async updatePayment(id: string, updates: Partial<Payment>): Promise<Payment> {
     try {
       const docRef = doc(this.paymentsCollection, id);
-      await updateDoc(docRef, this.prepareForFirestore(updates) as DocumentData);
+      const preparedUpdates = this.prepareForFirestore(updates) as DocumentData;
+      
+      await this.retryOperation(
+        () => updateDoc(docRef, preparedUpdates),
+        `Failed to update payment with ID ${id}`
+      );
       
       const updatedDoc = await getDoc(docRef);
       if (!updatedDoc.exists()) {
         throw new Error(`Payment with ID ${id} not found after update`);
       }
       
-      return this.convertToPayment(updatedDoc as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToPayment(updatedDoc as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error updating payment:', error);
       throw error;
@@ -276,7 +346,7 @@ export class FirebaseService {
         return null;
       }
       
-      return this.convertToPayment(docSnap as QueryDocumentSnapshot<DocumentData>);
+      return this.convertToPayment(docSnap as QueryDocumentSnapshot<DocumentData, DocumentData>);
     } catch (error) {
       console.error('Error getting payment:', error);
       throw error;

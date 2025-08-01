@@ -251,7 +251,7 @@ export default function HomePage() {
                     value={createForm.username}
                     onChange={(e) => setCreateForm({...createForm, username: e.target.value})}
                     placeholder="yourname"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
@@ -265,7 +265,7 @@ export default function HomePage() {
                     value={createForm.name}
                     onChange={(e) => setCreateForm({...createForm, name: e.target.value})}
                     placeholder="Your Full Name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function HomePage() {
                     onChange={(e) => setCreateForm({...createForm, description: e.target.value})}
                     placeholder="Tell people about yourself..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
