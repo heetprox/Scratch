@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Scratch {
+contract Scratch is ReentrancyGuard {
     event PaymentSent(
         address indexed sender,
         address indexed recipient,

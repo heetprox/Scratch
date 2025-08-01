@@ -1,6 +1,18 @@
 {
   "name": "scratch",
   "module": "index.ts",
+    "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network mainnet",
+    "ignition:sepolia": "hardhat ignition deploy ./ignition/modules/Scratch.ts --network sepolia",
+    "ignition:mainnet": "hardhat ignition deploy ./ignition/modules/Scratch.ts --network mainnet",
+    "verify": "hardhat verify --network",
+    "node": "hardhat node",
+    "clean": "hardhat clean"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
@@ -13,5 +25,14 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "dependencies": {},
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart-contracts",
+    "hardhat"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
 }
