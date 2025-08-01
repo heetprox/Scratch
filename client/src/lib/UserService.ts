@@ -94,7 +94,6 @@ export class UserService {
     }
   }
 
-  // Payment operations
   async createPayment(payment: Omit<Payment, 'id'>): Promise<Payment> {
     try {
       const response = await fetch(`${this.baseUrl}/payments`, {
@@ -152,16 +151,15 @@ export class UserService {
     }
   }
 
-  // Blockchain integration methods
   async recordBlockchainPayment(paymentEvent: PaymentSentEvent, scratchCardId: string): Promise<Payment> {
     const payment: Omit<Payment, 'id'> = {
       scratchCardId,
-      amount: Number(paymentEvent.amount) / 1e18, // Convert from wei to ETH
-      network: 'ethereum', // You can determine this from chainId
+      amount: Number(paymentEvent.amount) / 1e18,
+      network: 'ethereum',
       address: paymentEvent.recipient,
       done: true,
       transactionHash: paymentEvent.transactionHash,
-      timestamp: Number(paymentEvent.timestamp) * 1000, // Convert to milliseconds
+      timestamp: Number(paymentEvent.timestamp) * 1000, 
     };
 
     return await this.createPayment(payment);
@@ -175,7 +173,6 @@ export class UserService {
     });
   }
 
-  // Wallet address management
   async addWalletAddress(
     scratchCardId: string, 
     network: string, 
@@ -183,7 +180,6 @@ export class UserService {
   ): Promise<ScratchCard> {
     const scratchCard = await this.getScratchCard(scratchCardId);
     
-    // Check if address already exists for this network
     const existingAddress = scratchCard.WalletAddress.find(wa => wa.network === network);
     
     if (existingAddress) {
@@ -209,7 +205,6 @@ export class UserService {
     });
   }
 
-  // Search and filtering
   async searchScratchCards(query: string): Promise<ScratchCard[]> {
     try {
       const response = await fetch(`${this.baseUrl}/scratchcards/search?q=${encodeURIComponent(query)}`);
@@ -225,7 +220,6 @@ export class UserService {
     }
   }
 
-  // Validation helpers
   validateEthereumAddress(address: string): boolean {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
   }
@@ -244,7 +238,6 @@ export class UserService {
     return num.toFixed(6).replace(/\.?0+$/, '');
   }
 
-  // Network helpers
   getNetworkName(chainId: number): string {
     switch (chainId) {
       case 1:
@@ -256,7 +249,6 @@ export class UserService {
     }
   }
 
-  // Error handling helper
   handleApiError(error: any): string {
     if (error instanceof Error) {
       return error.message;
