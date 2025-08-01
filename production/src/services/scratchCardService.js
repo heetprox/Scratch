@@ -1,7 +1,6 @@
-import { prisma } from '@/lib/db';
-import { CreateScratchCardParams, ScratchCard } from '@/types';
+import prisma from '../lib/db';
 
-export async function createScratchCard(data: CreateScratchCardParams): Promise<ScratchCard> {
+export async function createScratchCard(data) {
   return await prisma.scratchCard.create({
     data: {
       username: data.username,
@@ -13,7 +12,7 @@ export async function createScratchCard(data: CreateScratchCardParams): Promise<
   });
 }
 
-export async function getScratchCardByUsername(username: string): Promise<ScratchCard | null> {
+export async function getScratchCardByUsername(username) {
   return await prisma.scratchCard.findUnique({
     where: { username },
     include: {
@@ -22,7 +21,7 @@ export async function getScratchCardByUsername(username: string): Promise<Scratc
   });
 }
 
-export async function getAllScratchCards(): Promise<ScratchCard[]> {
+export async function getAllScratchCards() {
   return await prisma.scratchCard.findMany({
     include: {
       payments: true,
@@ -31,16 +30,16 @@ export async function getAllScratchCards(): Promise<ScratchCard[]> {
 }
 
 export async function updateScratchCard(
-  username: string,
-  data: Partial<CreateScratchCardParams>
-): Promise<ScratchCard> {
+  username,
+  data 
+) {
   return await prisma.scratchCard.update({
     where: { username },
     data,
   });
 }
 
-export async function deleteScratchCard(username: string): Promise<ScratchCard> {
+export async function deleteScratchCard(username) {
   return await prisma.scratchCard.delete({
     where: { username },
   });

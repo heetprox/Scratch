@@ -1,12 +1,11 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("NEON_DATABASE_URL")
-  directUrl = env("NEON_DATABASE_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 model ScratchCard {
@@ -27,99 +26,22 @@ model ScratchCard {
 
 model Payment {
   id              String      @id @default(uuid())
-  scratchCardId   String      @map("scratch_card_id")
-  amount          Decimal     @db.Decimal(18, 8) // Support for high precision crypto amounts
+  senderId        String      @map("sender_id")
+  amount          Decimal     @db.Decimal(18, 8) 
   network         String
   address         String
   done            Boolean     @default(false)
   transactionHash String?     @map("transaction_hash")
-  timestamp       BigInt?     // Unix timestamp in milliseconds
+  timestamp       BigInt?   
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  // Relations
-  scratchCard     ScratchCard @relation("ScratchCardPayments", fields: [scratchCardId], references: [id], onDelete: Cascade)
+  sender          ScratchCard @relation("ScratchCardPayments", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("payments")
-  @@index([scratchCardId])
+  @@index([senderId])
   @@index([transactionHash])
   @@index([done])
   @@index([createdAt])
   @@index([network, address])
-}
-
-model Transaction {
-  id              String   @id @default(uuid())
-  paymentId       String?  @map("payment_id")
-  sender          String
-  recipient       String
-  amount          Decimal  @db.Decimal(18, 8)
-  message         String?
-  transactionHash String   @unique @map("transaction_hash")
-  blockNumber     BigInt?  @map("block_number")
-  gasUsed         BigInt?  @map("gas_used")
-  gasPrice        BigInt?  @map("gas_price")
-  network         String
-  status          TransactionStatus @default(PENDING)
-  timestamp       BigInt   // Block timestamp
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  @@map("transactions")
-  @@index([transactionHash])
-  @@index([sender])
-  @@index([recipient])
-  @@index([network])
-  @@index([status])
-  @@index([timestamp])
-}
-
-model EventLog {
-  id              String   @id @default(uuid())
-  eventType       String   @map("event_type") // PaymentSent, PaymentReceived, etc.
-  transactionHash String   @map("transaction_hash")
-  blockNumber     BigInt   @map("block_number")
-  logIndex        Int      @map("log_index")
-  network         String
-  eventData       Json     @map("event_data") // Raw event data
-  processed       Boolean  @default(false)
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  @@map("event_logs")
-  @@unique([transactionHash, logIndex])
-  @@index([eventType])
-  @@index([network])
-  @@index([processed])
-  @@index([blockNumber])
-}
-
-model ApiKey {
-  id          String   @id @default(uuid())
-  name        String
-  keyHash     String   @unique @map("key_hash") // Hashed API key
-  permissions Json     // Array of permissions
-  active      Boolean  @default(true)
-  lastUsed    DateTime? @map("last_used")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@map("api_keys")
-  @@index([keyHash])
-  @@index([active])
-}
-
-enum TransactionStatus {
-  PENDING
-  CONFIRMED
-  FAILED
-  DROPPED
-}
-
-enum EventType {
-  PAYMENT_SENT
-  PAYMENT_RECEIVED
-  WALLET_CONNECTED
-  SCRATCH_CARD_CREATED
-  SCRATCH_CARD_UPDATED
 }

@@ -2,13 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getScratchCardByUsername, updateScratchCard, deleteScratchCard } from '@/services/scratchCardService';
 import { CreateScratchCardParams } from '@/types';
 
-interface Params {
-  params: {
-    username: string;
-  };
-}
+// Removed TypeScript interface in JavaScript file
 
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(request, { params }) {
   try {
     const { username } = params;
     const profile = await getScratchCardByUsername(username);
@@ -21,7 +17,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     }
     
     return NextResponse.json(profile);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to fetch profile:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
@@ -30,10 +26,10 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(request, { params }) {
   try {
     const { username } = params;
-    const data = await request.json() as Partial<CreateScratchCardParams>;
+    const data = await request.json();
     
     // Check if profile exists
     const existingProfile = await getScratchCardByUsername(username);
@@ -47,7 +43,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     // Update profile
     const updatedProfile = await updateScratchCard(username, data);
     return NextResponse.json(updatedProfile);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to update profile:', error);
     return NextResponse.json(
       { error: 'Failed to update profile' },
@@ -56,7 +52,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(request, { params }) {
   try {
     const { username } = params;
     
@@ -75,7 +71,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
       { message: 'Profile deleted successfully' },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to delete profile:', error);
     return NextResponse.json(
       { error: 'Failed to delete profile' },

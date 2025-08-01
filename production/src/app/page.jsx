@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getAllScratchCards } from '@/services/scratchCardService';
+import { getAllScratchCards } from '../services/scratchCardService';
 
 async function HomePage() {
   const profiles = await getAllScratchCards();

@@ -2,13 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getScratchCardByUsername } from '@/services/scratchCardService';
 import { createPayment, getPaymentsByScratchCardId, updatePaymentStatus } from '@/services/paymentService';
 
-interface Params {
-  params: {
-    username: string;
-  };
-}
+// Removed TypeScript interface in JavaScript file
 
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(request, { params }) {
   try {
     const { username } = params;
     
@@ -24,7 +20,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     // Get payments for this profile
     const payments = await getPaymentsByScratchCardId(profile.id);
     return NextResponse.json(payments);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to fetch payments:', error);
     return NextResponse.json(
       { error: 'Failed to fetch payments' },
@@ -33,7 +29,7 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(request, { params }) {
   try {
     const { username } = params;
     const data = await request.json();
@@ -56,15 +52,16 @@ export async function POST(request: NextRequest, { params }: Params) {
     }
     
     // Create payment
-    const payment = await createPayment({
-      scratchCardId: profile.id,
-      amount: parseFloat(data.amount),
-      network: data.network,
-      address: data.address
-    });
+    const payment = await createPayment(
+      profile.id,
+      parseFloat(data.amount),
+      data.network,
+      data.address,
+      data.transactionHash
+    );
     
     return NextResponse.json(payment, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to create payment:', error);
     return NextResponse.json(
       { error: 'Failed to create payment' },
@@ -73,7 +70,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(request, { params }) {
   try {
     const { username } = params;
     const data = await request.json();
@@ -103,7 +100,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     );
     
     return NextResponse.json(updatedPayment);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to update payment:', error);
     return NextResponse.json(
       { error: 'Failed to update payment' },

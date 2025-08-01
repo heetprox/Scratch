@@ -1,21 +1,6 @@
 import { ethers } from "ethers";
 import { PrismaClient } from "@prisma/client";
 
-export interface SendPaymentParams {
-  recipient: string;
-  amount: string;
-  message: string;
-}
-
-export interface PaymentSentEvent {
-  sender: string;
-  recipient: string;
-  amount: bigint;
-  message: string;
-  timestamp: bigint;
-  paymentId: string;
-  transactionHash?: string;
-}
 
 export interface ScratchCard {
   id: string;
@@ -32,26 +17,15 @@ export interface ScratchCard {
   updatedAt: Date;
 }
 
-export interface CreateScratchCardParams {
-  username: string;
-  name: string;
-  image: string;
-  description: string;
-  walletAddresses: {
-    network: string;
-    address: string;
-  }[];
-}
-
 export interface Payment {
   id: string;
-  scratchCardId: string;
+  senderId: string;
   amount: number;
   network: string;
   address: string;
   done: boolean;
   transactionHash?: string;
-  timestamp?: number;
+  timestamp?: bigint | number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -68,7 +42,6 @@ export interface Web3ContextType {
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
   switchNetwork: (chainId: number) => Promise<void>;
-  sendPayment: (params: SendPaymentParams) => Promise<string>;
   getContractBalance: () => Promise<string>;
   contract: ethers.Contract | null;
   provider: ethers.BrowserProvider | null;

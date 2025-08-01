@@ -5,19 +5,13 @@ import { useRouter } from 'next/navigation';
 import ProfileForm from '@/components/ProfileForm';
 import { CreateScratchCardParams, ScratchCard } from '@/types';
 
-interface EditProfilePageProps {
-  params: {
-    username: string;
-  };
-}
-
-const EditProfilePage = ({ params }: EditProfilePageProps) => {
+const EditProfilePage = ({ params }) => {
   const { username } = params;
   const router = useRouter();
-  const [profile, setProfile] = useState<ScratchCard | null>(null);
+  const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,7 +28,7 @@ const EditProfilePage = ({ params }: EditProfilePageProps) => {
         
         const data = await response.json();
         setProfile(data);
-      } catch (err: any) {
+      } catch (err) {
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -44,7 +38,7 @@ const EditProfilePage = ({ params }: EditProfilePageProps) => {
     fetchProfile();
   }, [username, router]);
 
-  const handleSubmit = async (data: CreateScratchCardParams) => {
+  const handleSubmit = async (data) => {
     setIsSaving(true);
     setError('');
     
@@ -70,7 +64,7 @@ const EditProfilePage = ({ params }: EditProfilePageProps) => {
       
       // Redirect back to profile page
       router.push(`/profile/${username}`);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
     } finally {
       setIsSaving(false);

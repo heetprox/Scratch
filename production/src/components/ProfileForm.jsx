@@ -1,23 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useWeb3 } from '@/context/Provider';
-import { CreateScratchCardParams, ScratchCard } from '@/types';
 
-interface ProfileFormProps {
-  initialData?: ScratchCard;
-  onSubmit: (data: CreateScratchCardParams) => Promise<void>;
-  isLoading?: boolean;
-}
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ 
+const ProfileForm = ({ 
   initialData, 
   onSubmit,
   isLoading = false 
 }) => {
   const { account, isConnected, connect } = useWeb3();
   
-  const [formData, setFormData] = useState<CreateScratchCardParams>({
+  const [formData, setFormData] = useState({
     username: initialData?.username || '',
     name: initialData?.name || '',
     image: initialData?.image || 'https://via.placeholder.com/150',
@@ -25,9 +19,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     walletAddresses: initialData?.walletAddresses || [{ network: 'Ethereum', address: account || '' }]
   });
 
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -35,7 +29,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     }));
   };
 
-  const handleWalletChange = (index: number, field: 'network' | 'address', value: string) => {
+  const handleWalletChange = (index, field, value) => {
     const updatedWallets = [...formData.walletAddresses];
     updatedWallets[index] = {
       ...updatedWallets[index],
@@ -55,7 +49,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     }));
   };
 
-  const removeWallet = (index: number) => {
+  const removeWallet = (index) => {
     if (formData.walletAddresses.length <= 1) return;
     
     const updatedWallets = formData.walletAddresses.filter((_, i) => i !== index);
@@ -65,7 +59,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -82,7 +76,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     
     try {
       await onSubmit(formData);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'Failed to save profile');
     }
   };
@@ -163,7 +157,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                 alt="Profile Preview" 
                 className="w-20 h-20 rounded-full object-cover"
                 onError={(e) => {
-                  const target = e.target as HTMLImageElement;
+                  const target = e.target;
                   target.src = 'https://via.placeholder.com/150';
                 }}
               />

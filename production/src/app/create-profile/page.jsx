@@ -8,9 +8,9 @@ import { CreateScratchCardParams } from '@/types';
 const CreateProfilePage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (data: CreateScratchCardParams) => {
+  const handleSubmit = async (data) => {
     setIsLoading(true);
     setError('');
     
@@ -31,7 +31,7 @@ const CreateProfilePage = () => {
       
       // Redirect to the new profile page
       router.push(`/profile/${result.username}`);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);

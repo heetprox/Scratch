@@ -2,19 +2,13 @@
 
 import React, { useState } from 'react';
 import { useWeb3 } from '@/context/Provider';
-import { ScratchCard, CreateScratchCardParams } from '@/types';
 
-interface ProfileProps {
-  profile?: ScratchCard;
-  isOwner?: boolean;
-}
-
-const Profile: React.FC<ProfileProps> = ({ profile, isOwner = false }) => {
+const Profile = ({ profile, isOwner = false }) => {
   const { account, sendPayment, isConnected, connect } = useWeb3();
-  const [amount, setAmount] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [txHash, setTxHash] = useState<string>('');
+  const [amount, setAmount] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [txHash, setTxHash] = useState('');
 
   const handlePayment = async () => {
     if (!profile || !account || !isConnected) return;

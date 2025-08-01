@@ -47,19 +47,16 @@ createWeb3Modal({
   enableAnalytics: true
 });
 
-const Web3Context = createContext<Web3ContextType | null>(null);
+const Web3Context = createContext();
 
-interface Web3ProviderProps {
-  children: ReactNode;
-}
 
-export function Provider({ children }: Web3ProviderProps) {
-  const [account, setAccount] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<number | null>(null);
+export function Provider({ children }) {
+  const [account, setAccount] = useState(null);
+  const [chainId, setChainId] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
-  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const [provider, setProvider] = useState(null);
+  const [contract, setContract] = useState(null);
 
   useEffect(() => {
     const initializeWeb3 = async () => {
@@ -94,7 +91,7 @@ export function Provider({ children }: Web3ProviderProps) {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
-      const handleAccountsChanged = (accounts: string[]) => {
+      const handleAccountsChanged = (accounts) => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
           setIsConnected(true);
@@ -105,7 +102,7 @@ export function Provider({ children }: Web3ProviderProps) {
         }
       };
 
-      const handleChainChanged = (chainId: string) => {
+      const handleChainChanged = (chainId) => {
         const newChainId = parseInt(chainId, 16);
         setChainId(newChainId);
         
@@ -124,7 +121,7 @@ export function Provider({ children }: Web3ProviderProps) {
     }
   }, [provider, account]);
 
-  const getContractAddress = (chainId: number): string | null => {
+  const getContractAddress = (chainId) => {
     switch (chainId) {
       case 1:
         return CONTRACT_ADDRESSES.mainnet;
@@ -135,7 +132,7 @@ export function Provider({ children }: Web3ProviderProps) {
     }
   };
 
-  const initializeContract = async (networkChainId: number) => {
+  const initializeContract = async (networkChainId) => {
     if (!provider || !account) return;
 
     try {
@@ -184,7 +181,7 @@ export function Provider({ children }: Web3ProviderProps) {
     setContract(null);
   };
 
-  const switchNetwork = async (targetChainId: number) => {
+  const switchNetwork = async (targetChainId) => {
     if (!window.ethereum) throw new Error('No wallet detected');
 
     try {
@@ -192,10 +189,10 @@ export function Provider({ children }: Web3ProviderProps) {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${targetChainId.toString(16)}` }],
       });
-    } catch (error: any) {
+    } catch (error) {
 
         if (error.code === 4902) {
-        const network = SUPPORTED_NETWORKS[targetChainId as keyof typeof SUPPORTED_NETWORKS];
+        const network = SUPPORTED_NETWORKS[targetChainId];
         if (network) {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
@@ -218,7 +215,7 @@ export function Provider({ children }: Web3ProviderProps) {
     }
   };
 
-  const sendPayment = async (params: SendPaymentParams): Promise<string> => {
+  const sendPayment = async (params) => {
     if (!contract || !provider) {
       throw new Error('Contract not initialized');
     }
@@ -240,7 +237,7 @@ export function Provider({ children }: Web3ProviderProps) {
     }
   };
 
-  const getContractBalance = async (): Promise<string> => {
+  const getContractBalance = async () => {
     if (!contract) {
       throw new Error('Contract not initialized');
     }
@@ -254,7 +251,7 @@ export function Provider({ children }: Web3ProviderProps) {
     }
   };
 
-  const contextValue: Web3ContextType = {
+  const contextValue = {
     account,
     chainId,
     isConnected,
@@ -275,7 +272,7 @@ export function Provider({ children }: Web3ProviderProps) {
   );
 }
 
-export const useWeb3 = (): Web3ContextType => {
+export const useWeb3 = () => {
   const context = useContext(Web3Context);
   if (!context) {
     throw new Error('useWeb3 must be used within a Web3Provider');

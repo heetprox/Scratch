@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const profiles = await getAllScratchCards();
     return NextResponse.json(profiles);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to fetch profiles:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profiles' },
@@ -15,9 +15,9 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request) {
   try {
-    const data = await request.json() as CreateScratchCardParams;
+    const data = await request.json();
     
     // Validate required fields
     if (!data.username || !data.name || !data.description || !data.walletAddresses || data.walletAddresses.length === 0) {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     
     const profile = await createScratchCard(data);
     return NextResponse.json(profile, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to create profile:', error);
     
     // Handle unique constraint violation
