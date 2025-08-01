@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { PrismaClient } from "@prisma/client";
 
 export interface SendPaymentParams {
   recipient: string;
@@ -17,16 +18,29 @@ export interface PaymentSentEvent {
 }
 
 export interface ScratchCard {
-  _id: string;
+  id: string;
   username: string;
   name: string;
   image: string;
   description: string;
-  WalletAddress: {
+  walletAddresses: {
     network: string;
     address: string;
   }[];
-  payments: Payment[];
+  payments?: Payment[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateScratchCardParams {
+  username: string;
+  name: string;
+  image: string;
+  description: string;
+  walletAddresses: {
+    network: string;
+    address: string;
+  }[];
 }
 
 export interface Payment {
@@ -38,6 +52,12 @@ export interface Payment {
   done: boolean;
   transactionHash?: string;
   timestamp?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface PrismaSingleton {
+  prisma: PrismaClient;
 }
 
 export interface Web3ContextType {

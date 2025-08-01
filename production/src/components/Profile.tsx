@@ -1,349 +1,172 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { UserService } from '@/lib/UserService';
-import { ScratchCard, Payment } from '@/types';
+import React, { useState } from 'react';
 import { useWeb3 } from '@/context/Provider';
-import { PaymentForm } from './PaymentForm';
+import { ScratchCard, CreateScratchCardParams } from '@/types';
 
-interface ScratchCardProfileProps {
-  scratchCard: ScratchCard;
+interface ProfileProps {
+  profile?: ScratchCard;
   isOwner?: boolean;
-  onUpdate?: (updatedCard: ScratchCard) => void;
 }
 
-export function Profile({ scratchCard, isOwner = false, onUpdate }: ScratchCardProfileProps) {
-  const { account, isConnected } = useWeb3();
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
-    name: scratchCard.name,
-    description: scratchCard.description,
-    image: scratchCard.image
-  });
-  const [newWalletAddress, setNewWalletAddress] = useState('');
-  const [selectedNetwork, setSelectedNetwork] = useState('ethereum');
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error' | 'info';
-    message: string;
-  } | null>(null);
+const Profile: React.FC<ProfileProps> = ({ profile, isOwner = false }) => {
+  const { account, sendPayment, isConnected, connect } = useWeb3();
+  const [amount, setAmount] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>('');
 
-  const userService = new UserService();
-
-  useEffect(() => {
-    loadPayments();
-  }, [scratchCard._id]);
-
-  const loadPayments = async () => {
+  const handlePayment = async () => {
+    if (!profile || !account || !isConnected) return;
+    
     try {
-      const cardPayments = await userService.getPaymentsByScratchCard(scratchCard._id);
-      setPayments(cardPayments.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)));
+      setIsLoading(true);
+      // Find the first wallet address to send payment to
+      const recipientWallet = profile.walletAddresses[0];
+      
+      if (!recipientWallet) {
+        throw new Error('No wallet address found for this profile');
+      }
+      
+      const hash = await sendPayment({
+        recipient: recipientWallet.address,
+        amount,
+        message
+      });
+      
+      setTxHash(hash);
+      setAmount('');
+      setMessage('');
     } catch (error) {
-      console.error('Failed to load payments:', error);
+      console.error('Payment failed:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isOwner) return;
-
-    try {
-      const updatedCard = await userService.updateScratchCard(scratchCard._id, editForm);
-      onUpdate?.(updatedCard);
-      setIsEditing(false);
-      showNotification('success', 'Profile updated successfully!');
-    } catch (error) {
-      showNotification('error', 'Failed to update profile');
-    }
-  };
-
-  const handleAddWalletAddress = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isOwner) return;
-
-    if (!userService.validateEthereumAddress(newWalletAddress)) {
-      showNotification('error', 'Invalid Ethereum address');
-      return;
-    }
-
-    try {
-      const updatedCard = await userService.addWalletAddress(
-        scratchCard._id,
-        selectedNetwork,
-        newWalletAddress
-      );
-      onUpdate?.(updatedCard);
-      setNewWalletAddress('');
-      showNotification('success', 'Wallet address added successfully!');
-    } catch (error) {
-      showNotification('error', 'Failed to add wallet address');
-    }
-  };
-
-  const handleRemoveWalletAddress = async (network: string) => {
-    if (!isOwner) return;
-
-    try {
-      const updatedCard = await userService.removeWalletAddress(scratchCard._id, network);
-      onUpdate?.(updatedCard);
-      showNotification('success', 'Wallet address removed');
-    } catch (error) {
-      showNotification('error', 'Failed to remove wallet address');
-    }
-  };
-
-  const handlePaymentSuccess = (transactionHash: string) => {
-    showNotification('success', 'Payment sent successfully!');
-    setShowPaymentForm(false);
-    loadPayments(); // Reload payments
-  };
-
-  const handlePaymentError = (error: string) => {
-    showNotification('error', `Payment failed: ${error}`);
-  };
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getExplorerUrl = (network: string, txHash: string) => {
-    const baseUrls: Record<string, string> = {
-      ethereum: 'https://etherscan.io/tx/',
-      sepolia: 'https://sepolia.etherscan.io/tx/'
-    };
-    return baseUrls[network] + txHash;
-  };
+  if (!profile) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-4">
+        <h2 className="text-2xl font-bold mb-4">Profile not found</h2>
+        <p>The requested profile does not exist.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {notification && (
-        <div className={`mb-4 p-4 rounded-md ${
-          notification.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' :
-          notification.type === 'error' ? 'bg-red-50 text-red-800 border border-red-200' :
-          'bg-blue-50 text-blue-800 border border-blue-200'
-        }`}>
-          {notification.message}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Profile Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Profile</h2>
-            {isOwner && (
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-              >
-                {isEditing ? 'Cancel' : 'Edit'}
-              </button>
-            )}
+    <div className="max-w-4xl mx-auto p-4">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="relative h-40 bg-gradient-to-r from-blue-500 to-purple-600">
+          <div className="absolute -bottom-16 left-8">
+            <img 
+              src={profile.image} 
+              alt={profile.name} 
+              className="w-32 h-32 rounded-full border-4 border-white object-cover"
+            />
           </div>
-
-          {isEditing ? (
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={editForm.description}
-                  onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Image URL
-                </label>
-                <input
-                  type="url"
-                  value={editForm.image}
-                  onChange={(e) => setEditForm({...editForm, image: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Update Profile
-              </button>
-            </form>
-          ) : (
-            <div className="text-center">
-              <img
-                src={scratchCard.image || '/default-avatar.png'}
-                alt={scratchCard.name}
-                className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-              />
-              <h3 className="text-xl font-semibold">{scratchCard.name}</h3>
-              <p className="text-gray-600">@{scratchCard.username}</p>
-              {scratchCard.description && (
-                <p className="mt-3 text-gray-700">{scratchCard.description}</p>
-              )}
+        </div>
+        
+        <div className="pt-20 px-8 pb-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-3xl font-bold">{profile.name}</h1>
+              <p className="text-gray-600">@{profile.username}</p>
             </div>
-          )}
-
-          {/* Wallet Addresses */}
-          <div className="mt-6">
-            <h4 className="font-semibold mb-3">Wallet Addresses</h4>
-            {scratchCard.WalletAddress.length > 0 ? (
-              <div className="space-y-2">
-                {scratchCard.WalletAddress.map((wa) => (
-                  <div key={wa.network} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div>
-                      <p className="font-medium capitalize">{wa.network}</p>
-                      <p className="text-sm text-gray-600 font-mono">
-                        {wa.address.slice(0, 10)}...{wa.address.slice(-8)}
-                      </p>
+            {!isOwner && (
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2">Support {profile.name}</h3>
+                {isConnected ? (
+                  <div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Amount (ETH)</label>
+                      <input 
+                        type="text" 
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.01"
+                        className="w-full p-2 border rounded-md"
+                      />
                     </div>
-                    {isOwner && (
-                      <button
-                        onClick={() => handleRemoveWalletAddress(wa.network)}
-                        className="text-red-600 hover:text-red-800 text-sm"
-                      >
-                        Remove
-                      </button>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                      <textarea 
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Leave a message..."
+                        className="w-full p-2 border rounded-md"
+                        rows={2}
+                      />
+                    </div>
+                    <button 
+                      onClick={handlePayment}
+                      disabled={isLoading || !amount}
+                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? 'Processing...' : 'Send Payment'}
+                    </button>
+                    {txHash && (
+                      <div className="mt-2 text-sm text-green-600">
+                        Payment sent! Transaction: {txHash.substring(0, 10)}...{txHash.substring(txHash.length - 10)}
+                      </div>
                     )}
                   </div>
-                ))}
+                ) : (
+                  <button 
+                    onClick={connect}
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                  >
+                    Connect Wallet to Pay
+                  </button>
+                )}
               </div>
-            ) : (
-              <p className="text-gray-500">No wallet addresses added</p>
-            )}
-
-            {/* Add Wallet Address */}
-            {isOwner && (
-              <form onSubmit={handleAddWalletAddress} className="mt-4 space-y-3">
-                <select
-                  value={selectedNetwork}
-                  onChange={(e) => setSelectedNetwork(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="ethereum">Ethereum</option>
-                  <option value="sepolia">Sepolia</option>
-                </select>
-                <input
-                  type="text"
-                  value={newWalletAddress}
-                  onChange={(e) => setNewWalletAddress(e.target.value)}
-                  placeholder="0x..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                >
-                  Add Address
-                </button>
-              </form>
             )}
           </div>
-        </div>
-
-        {/* Payment Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {!isOwner && scratchCard.WalletAddress.length > 0 && (
-            <div className="mb-6">
-              {!showPaymentForm ? (
-                <button
-                  onClick={() => setShowPaymentForm(true)}
-                  className="w-full py-3 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Send Payment
-                </button>
-              ) : (
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Send Payment</h3>
-                    <button
-                      onClick={() => setShowPaymentForm(false)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <PaymentForm
-                    scratchCard={scratchCard}
-                    onPaymentSuccess={handlePaymentSuccess}
-                    onPaymentError={handlePaymentError}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Payment History */}
+          
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">About</h2>
+            <p className="text-gray-700">{profile.description}</p>
+          </div>
+          
           <div>
-            <h4 className="font-semibold mb-4">Payment History</h4>
-            {payments.length > 0 ? (
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {payments.map((payment) => (
-                  <div key={payment.id} className="p-4 border border-gray-200 rounded-md">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">
-                        {userService.formatEthAmount(payment.amount)} ETH
-                      </span>
-                      <span className={`px-2 py-1 text-xs rounded ${
-                        payment.done ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+            <h2 className="text-xl font-semibold mb-2">Wallet Addresses</h2>
+            <div className="space-y-2">
+              {profile.walletAddresses.map((wallet, index) => (
+                <div key={index} className="bg-gray-100 p-3 rounded-md">
+                  <div className="flex justify-between">
+                    <span className="font-medium">{wallet.network}</span>
+                    <span className="text-gray-600 text-sm">{wallet.address.substring(0, 6)}...{wallet.address.substring(wallet.address.length - 4)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {profile.payments && profile.payments.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold mb-2">Recent Payments</h2>
+              <div className="space-y-2">
+                {profile.payments.map((payment) => (
+                  <div key={payment.id} className="bg-gray-100 p-3 rounded-md">
+                    <div className="flex justify-between">
+                      <span className="font-medium">{payment.amount} ETH</span>
+                      <span className="text-gray-600 text-sm">
                         {payment.done ? 'Completed' : 'Pending'}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 capitalize">
-                      Network: {payment.network}
-                    </p>
-                    {payment.timestamp && (
-                      <p className="text-sm text-gray-500">
-                        {formatDate(payment.timestamp)}
-                      </p>
-                    )}
                     {payment.transactionHash && (
-                      <a
-                        href={getExplorerUrl(payment.network, payment.transactionHash)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      >
-                        View Transaction
-                      </a>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Tx: {payment.transactionHash.substring(0, 6)}...{payment.transactionHash.substring(payment.transactionHash.length - 4)}
+                      </div>
                     )}
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-gray-500">No payments yet</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Profile;
