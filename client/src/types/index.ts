@@ -1,5 +1,5 @@
 interface ScratchCard {
-  id: string;
+  _id: string;
   name: string;
   image: string;
   description: string;
@@ -7,6 +7,14 @@ interface ScratchCard {
     network: string;
     address: string;
   }[];
+  payments: Payment[];
 }
 
-
+interface Payment {
+    id: string;
+    scratchCardId: string;
+    amount: number;
+    network: string;
+    address: string;
+    done: boolean;
+}
