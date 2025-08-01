@@ -39,7 +39,6 @@ contract Scratch {
                 paymentCounter
             )
         );
-
         _recipient.transfer(netAmount);
 
         if (fee > 0 && owner != address(0)) {
@@ -65,5 +64,17 @@ contract Scratch {
     function updateOwner(address _newOwner) external {
         require(msg.sender == owner, "Only owner");
         owner = _newOwner;
+    }
+
+    function getChainId() external view returns (uint256) {
+        return block.chainid;
+    }
+
+    function getContractBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+
+    receive() external payable {
+        revert("Use sendPayment function");
     }
 }
