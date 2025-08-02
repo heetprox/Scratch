@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "Bergurau-Regular";
+  src: url("/fonts/Bergurau Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "navigator-hand";
+  src: url("/fonts/navigator-hand.ttf") format("truetype");
+}
+
+.navigator-hand {
+  font-family: "navigator-hand", sans-serif;
+}
+.helve {
+  font-family: "HelveticaNeueMedium", sans-serif;
+}
