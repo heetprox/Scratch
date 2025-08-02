@@ -1,8 +1,7 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Web3Context } from '../context/Provider';
-
 
 const ProfileForm = ({ 
   initialData, 
@@ -16,10 +15,27 @@ const ProfileForm = ({
     name: initialData?.name || '',
     image: initialData?.image || 'https://via.placeholder.com/150',
     description: initialData?.description || '',
-    walletAddresses: initialData?.walletAddresses || [{ network: 'Ethereum', address: account || '' }]
+    walletAddresses: initialData?.walletAddresses || [{ network: 'Ethereum', address: '' }]
   });
 
   const [error, setError] = useState('');
+
+  // Update wallet address when account changes
+  useEffect(() => {
+    if (account && isConnected) {
+      setFormData(prev => {
+        const updatedWallets = [...prev.walletAddresses];
+        // Update the first wallet address with the connected account
+        if (updatedWallets.length > 0 && !updatedWallets[0].address) {
+          updatedWallets[0].address = account;
+        }
+        return {
+          ...prev,
+          walletAddresses: updatedWallets
+        };
+      });
+    }
+  }, [account, isConnected]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,19 +100,9 @@ const ProfileForm = ({
   const connectWallet = async () => {
     try {
       await connect();
-      // Update the first wallet address with the connected account
-      if (account) {
-        const updatedWallets = [...formData.walletAddresses];
-        if (updatedWallets.length > 0) {
-          updatedWallets[0].address = account;
-          setFormData(prev => ({
-            ...prev,
-            walletAddresses: updatedWallets
-          }));
-        }
-      }
     } catch (err) {
       console.error('Failed to connect wallet:', err);
+      setError('Failed to connect wallet. Please try again.');
     }
   };
 
@@ -119,7 +125,7 @@ const ProfileForm = ({
             value={formData.username}
             onChange={handleChange}
             placeholder="your-unique-username"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={!!initialData} // Cannot change username if editing
             required
           />
@@ -134,7 +140,7 @@ const ProfileForm = ({
             value={formData.name}
             onChange={handleChange}
             placeholder="Your Name"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
@@ -147,7 +153,7 @@ const ProfileForm = ({
             value={formData.image}
             onChange={handleChange}
             placeholder="https://example.com/your-image.jpg"
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
           {formData.image && (
@@ -155,7 +161,7 @@ const ProfileForm = ({
               <img 
                 src={formData.image} 
                 alt="Profile Preview" 
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                 onError={(e) => {
                   const target = e.target;
                   target.src = 'https://via.placeholder.com/150';
@@ -172,7 +178,7 @@ const ProfileForm = ({
             value={formData.description}
             onChange={handleChange}
             placeholder="Tell people about yourself..."
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             rows={4}
             required
           />
@@ -185,10 +191,16 @@ const ProfileForm = ({
               <button 
                 type="button"
                 onClick={connectWallet}
-                className="text-sm bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700"
+                className="text-sm bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
+            )}
+            {isConnected && account && (
+              <div className="text-sm text-green-600 flex items-center">
+                <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                Connected: {account.slice(0, 6)}...{account.slice(-4)}
+              </div>
             )}
           </div>
           
@@ -197,7 +209,7 @@ const ProfileForm = ({
               <select
                 value={wallet.network}
                 onChange={(e) => handleWalletChange(index, 'network', e.target.value)}
-                className="p-2 border rounded-md w-1/3"
+                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="Ethereum">Ethereum</option>
                 <option value="Sepolia">Sepolia</option>
@@ -207,13 +219,14 @@ const ProfileForm = ({
                 value={wallet.address}
                 onChange={(e) => handleWalletChange(index, 'address', e.target.value)}
                 placeholder="0x..."
-                className="p-2 border rounded-md flex-1"
+                className="p-2 border rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
               />
               <button 
                 type="button" 
                 onClick={() => removeWallet(index)}
-                className="p-2 text-red-600 hover:text-red-800"
+                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
                 disabled={formData.walletAddresses.length <= 1}
+                title="Remove wallet address"
               >
                 ✕
               </button>
@@ -223,16 +236,16 @@ const ProfileForm = ({
           <button 
             type="button" 
             onClick={addWallet}
-            className="text-sm text-blue-600 hover:text-blue-800 mt-1"
+            className="text-sm text-blue-600 hover:text-blue-800 mt-1 transition-colors"
           >
             + Add Another Wallet
-          </button>
+          </button>  
         </div>
         
         <div className="mt-6">
           <button 
             type="submit" 
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : initialData ? 'Update Profile' : 'Create Profile'}
