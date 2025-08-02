@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getScratchCardByUsername, updateScratchCard, deleteScratchCard } from '@/services/scratchCardService';
 import { CreateScratchCardParams } from '@/types';
 
-// Removed TypeScript interface in JavaScript file
-
 export async function GET(request, { params }) {
   try {
-    const { username } = params;
+    const { username } = await params;
     const profile = await getScratchCardByUsername(username);
     
     if (!profile) {

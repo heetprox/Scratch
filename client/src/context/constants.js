@@ -1,8 +1,8 @@
 
 
 export const CONTRACT_ADDRESSES = {
-  sepolia: "0x...", 
-  mainnet: "0x...", 
+  sepolia: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  mainnet: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
   localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3" 
 };
 

@@ -155,6 +155,25 @@ const ProfileForm = ({
     }
   };
 
+  // Auto-fill wallet address function
+  const autoFillWalletAddress = (index) => {
+    if (!account || !isConnected) {
+      setError('Please connect your wallet first');
+      return;
+    }
+    
+    const updatedWallets = [...formData.walletAddresses];
+    updatedWallets[index] = {
+      ...updatedWallets[index],
+      address: account
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      walletAddresses: updatedWallets
+    }));
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">{initialData ? 'Edit Profile' : 'Create Profile'}</h2>
@@ -259,12 +278,12 @@ const ProfileForm = ({
         
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-gray-700">Wallet Addresses*</label>
+            <label className="block text-sm font-medium text-black">Wallet Addresses*</label>
             {!isConnected && (
               <button 
                 type="button"
                 onClick={connectWallet}
-                className="text-sm bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
+                className="text-sm bg-blue-600 text-black py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
@@ -282,18 +301,28 @@ const ProfileForm = ({
               <select
                 value={wallet.network}
                 onChange={(e) => handleWalletChange(index, 'network', e.target.value)}
-                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 text-black focus:border-blue-500"
               >
                 <option value="Ethereum">Ethereum</option>
                 <option value="Sepolia">Sepolia</option>
+                <option value="Localhost">Localhost</option>
               </select>
               <input
                 type="text"
                 value={wallet.address}
                 onChange={(e) => handleWalletChange(index, 'address', e.target.value)}
                 placeholder="0x..."
-                className="p-2 border rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                className="p-2 border text-black rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
               />
+              <button 
+                type="button" 
+                onClick={() => autoFillWalletAddress(index)}
+                className="p-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-md transition-colors"
+                title="Use connected wallet address"
+                disabled={!isConnected}
+              >
+                Auto
+              </button>
               <button 
                 type="button" 
                 onClick={() => removeWallet(index)}
