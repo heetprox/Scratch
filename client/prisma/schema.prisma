@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model ScratchCard {
+  id               String    @id @default(uuid())
+  username         String    @unique
+  name             String
+  image            String
+  description      String
+  walletAddresses  Json      @map("wallet_addresses") 
+  payments         Payment[] @relation("ScratchCardPayments")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("scratch_cards")
+  @@index([username])
+  @@index([createdAt])
+}
+
+model Payment {
+  id              String      @id @default(uuid())
+  senderId        String      @map("sender_id")
+  amount          Decimal     @db.Decimal(18, 8) 
+  network         String
+  address         String
+  done            Boolean     @default(false)
+  transactionHash String?     @map("transaction_hash")
+  timestamp       BigInt?   
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  sender          ScratchCard @relation("ScratchCardPayments", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+  @@index([senderId])
+  @@index([transactionHash])
+  @@index([done])
+  @@index([createdAt])
+  @@index([network, address])
+}
