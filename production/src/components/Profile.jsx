@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useWeb3 } from '@/context/Provider';
+import { Web3Context } from '../context/Provider';
 
 const Profile = ({ profile, isOwner = false }) => {
-  const { account, sendPayment, isConnected, connect } = useWeb3();
+  const { account, sendPayment, isConnected, connect } = useContext(Web3Context);
   const [amount, setAmount] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);

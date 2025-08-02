@@ -14,12 +14,18 @@ const metadata = {
   icons: ['https://your-app-url.com/logo.png']
 };
 
+// Updated ethers config with better injected wallet handling
 const ethersConfig = defaultConfig({
   metadata,
   enableEIP6963: true,
   enableInjected: true,
   enableCoinbase: true,
-  rpcUrl: 'https://cloudflare-eth.com'
+  rpcUrl: 'https://cloudflare-eth.com',
+  // Add these options to better handle wallet conflicts
+  defaultChainId: 1,
+  auth: {
+    email: false // Disable email auth to reduce conflicts
+  }
 });
 
 const chains = [
@@ -39,29 +45,53 @@ const chains = [
   }
 ];
 
+// Create Web3Modal with additional options to handle connector conflicts
 createWeb3Modal({
   ethersConfig,
   chains,
   projectId,
-  enableAnalytics: true
+  enableAnalytics: true,
+  // Add these options to reduce connector conflicts
+  themeMode: 'light',
+  themeVariables: {
+    '--w3m-z-index': 1000
+  },
+  // Explicitly include wallets to avoid auto-detection conflicts
+  includeWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
+    '38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662', // Rabby
+  ]
 });
 
-const Web3Context = createContext();
+export const Web3Context = createContext();
 
-
-export function Provider({ children }) {
+export function Web3Provider({ children }) {
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
+  const [initializationError, setInitializationError] = useState(null);
 
   useEffect(() => {
     const initializeWeb3 = async () => {
+      // Add a small delay to ensure all wallet extensions are loaded
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       if (typeof window !== 'undefined' && window.ethereum) {
         try {
-          const ethProvider = new ethers.BrowserProvider(window.ethereum);
+          // Check if there are multiple providers (common with Rabby + MetaMask)
+          let selectedProvider = window.ethereum;
+          
+          // If multiple providers exist, prefer the user's selection
+          if (window.ethereum.providers?.length > 0) {
+            // Let the user choose or use the first available
+            selectedProvider = window.ethereum.providers[0];
+          }
+          
+          const ethProvider = new ethers.BrowserProvider(selectedProvider);
           setProvider(ethProvider);
 
           const accounts = await ethProvider.send('eth_accounts', []);
@@ -81,6 +111,7 @@ export function Provider({ children }) {
           }
         } catch (error) {
           console.error('Failed to initialize Web3:', error);
+          setInitializationError(error.message);
         }
       }
     };
@@ -110,12 +141,21 @@ export function Provider({ children }) {
         }
       };
 
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
+      // Use a more defensive approach for event listeners
+      try {
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
+        window.ethereum.on('chainChanged', handleChainChanged);
+      } catch (error) {
+        console.warn('Failed to attach wallet event listeners:', error);
+      }
 
       return () => {
-        window.ethereum?.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum?.removeListener('chainChanged', handleChainChanged);
+        try {
+          window.ethereum?.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum?.removeListener('chainChanged', handleChainChanged);
+        } catch (error) {
+          console.warn('Failed to remove wallet event listeners:', error);
+        }
       };
     }
   }, [provider, account]);
@@ -150,7 +190,13 @@ export function Provider({ children }) {
     setIsConnecting(true);
     try {
       if (typeof window !== 'undefined' && window.ethereum) {
-        const ethProvider = new ethers.BrowserProvider(window.ethereum);
+        // Handle multiple providers more gracefully
+        let selectedProvider = window.ethereum;
+        if (window.ethereum.providers?.length > 0) {
+          selectedProvider = window.ethereum.providers[0];
+        }
+        
+        const ethProvider = new ethers.BrowserProvider(selectedProvider);
         await ethProvider.send('eth_requestAccounts', []);
         
         const signer = await ethProvider.getSigner();
@@ -189,8 +235,7 @@ export function Provider({ children }) {
         params: [{ chainId: `0x${targetChainId.toString(16)}` }],
       });
     } catch (error) {
-
-        if (error.code === 4902) {
+      if (error.code === 4902) {
         const network = SUPPORTED_NETWORKS[targetChainId];
         if (network) {
           await window.ethereum.request({
@@ -250,31 +295,22 @@ export function Provider({ children }) {
     }
   };
 
-  const contextValue = {
-    account,
-    chainId,
-    isConnected,
-    isConnecting,
-    connect,
-    disconnect,
-    switchNetwork,
-    sendPayment,
-    getContractBalance,
-    contract,
-    provider
-  };
-
   return (
-    <Web3Context.Provider value={contextValue}>
+    <Web3Context.Provider value={{
+      account,
+      chainId,
+      isConnected,
+      isConnecting,
+      connect,
+      disconnect,
+      switchNetwork,
+      sendPayment,
+      getContractBalance,
+      contract,
+      provider,
+      initializationError
+    }}>
       {children}
     </Web3Context.Provider>
   );
 }
-
-export const useWeb3 = () => {
-  const context = useContext(Web3Context);
-  if (!context) {
-    throw new Error('useWeb3 must be used within a Web3Provider');
-  }
-  return context;
-};

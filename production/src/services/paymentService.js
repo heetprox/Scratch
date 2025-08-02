@@ -1,5 +1,4 @@
 import prisma from '@/lib/db';
-import { Payment } from '@/types';
 import { v4 } from 'uuid';
 
 export async function createPayment(

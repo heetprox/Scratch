@@ -6,10 +6,8 @@ import { getScratchCardByUsername } from '@/services/scratchCardService';
 async function ProfilePage({ params }) {
   const { username } = params;
   
-  // Fetch profile data
   const profile = await getScratchCardByUsername(username);
   
-  // If profile doesn't exist, show 404
   if (!profile) {
     notFound();
   }

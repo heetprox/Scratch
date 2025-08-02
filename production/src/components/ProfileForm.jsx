@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useWeb3 } from '../context/Provider';
+import { useContext, useState } from 'react';
+import { Web3Context } from '../context/Provider';
 
 
 const ProfileForm = ({ 
@@ -9,7 +9,7 @@ const ProfileForm = ({
   onSubmit,
   isLoading = false 
 }) => {
-  const { account, isConnected, connect } = useWeb3();
+  const { account, isConnected, connect } = useContext(Web3Context);
   
   const [formData, setFormData] = useState({
     username: initialData?.username || '',
