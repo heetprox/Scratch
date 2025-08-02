@@ -1,6 +1,7 @@
 import "./globals.css";
 import "./fonts.css";
 import { Web3Provider } from "../context/Provider";
+import { ViewTransitions } from "next-view-transitions";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,6 +12,7 @@ export default function RootLayout({
   children,
 }) {
   return (
+    <ViewTransitions>
     <html lang="en">
       <body
         className={`navigator-hand bg-[#FFE6CD] min-h-screen antialiased`}
@@ -20,5 +22,6 @@ export default function RootLayout({
         </Web3Provider>
       </body>
     </html>
+    </ViewTransitions>
   );
 }
