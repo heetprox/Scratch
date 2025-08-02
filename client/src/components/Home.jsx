@@ -14,7 +14,7 @@ const Home = () => {
         >Scratch your web3 card.</div>
          <div className="flex absolute z-0 inset-0 w-full h-full justify-center flex-col items-center">
           <Image
-            src="/bg-logo.svg"
+            src="/bg-logo-2.svg"
             width={200}
             height={200}
             alt='bg'
