@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`navigator-hand antialiased`}
+        className={`navigator-hand bg-[#FFE6CD] min-h-screen antialiased`}
       >
         <Web3Provider>
         {children}
