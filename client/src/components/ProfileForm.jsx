@@ -278,12 +278,12 @@ const ProfileForm = ({
         
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-black">Wallet Addresses*</label>
+            <label className="block text-sm font-medium text-white">Wallet Addresses*</label>
             {!isConnected && (
               <button 
                 type="button"
                 onClick={connectWallet}
-                className="text-sm bg-blue-600 text-black py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
+                className="text-sm bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
@@ -301,7 +301,7 @@ const ProfileForm = ({
               <select
                 value={wallet.network}
                 onChange={(e) => handleWalletChange(index, 'network', e.target.value)}
-                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 text-black focus:border-blue-500"
+                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 text-white focus:border-blue-500"
               >
                 <option value="Ethereum">Ethereum</option>
                 <option value="Sepolia">Sepolia</option>
@@ -312,7 +312,7 @@ const ProfileForm = ({
                 value={wallet.address}
                 onChange={(e) => handleWalletChange(index, 'address', e.target.value)}
                 placeholder="0x..."
-                className="p-2 border text-black rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                className="p-2 border text-white rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
               />
               <button 
                 type="button" 

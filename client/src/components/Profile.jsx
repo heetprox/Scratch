@@ -69,7 +69,7 @@ const Profile = ({ profile, isOwner = false }) => {
             </div>
             {!isOwner && (
               <div className="bg-gray-100 p-4 rounded-lg">
-                <h3 className="text-lg text-black font-semibold mb-2">Support {profile.name}</h3>
+                <h3 className="text-lg text-white font-semibold mb-2">Support {profile.name}</h3>
                 {isConnected ? (
                   <div>
                     <div className="mb-3">
@@ -79,7 +79,7 @@ const Profile = ({ profile, isOwner = false }) => {
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.01"
-                        className="w-full text-black p-2 border rounded-md"
+                        className="w-full text-white p-2 border rounded-md"
                       />
                     </div>
                     <div className="mb-3">

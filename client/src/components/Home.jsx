@@ -1,42 +1,52 @@
 import Image from 'next/image'
 import React from 'react'
 import Text from './Text'
+import { MoveRight } from 'lucide-react'
 
 const Home = () => {
   return (
-    <div className='bg-[#FFE6CD] w-full h-[100vh]'>
+    <div className='bg-[#000000] w-full h-[100vh]'>
 
-      <div className="w-full h-full  flex flex-col justify-center items-center">
-        <div className="flex z-10 text-black"
-          style={{
-            fontSize: "clamp(1rem,3vw,200rem)",
-          }}
-        >Scratch your web3 card.</div>
-         <div className="flex absolute z-0 inset-0 w-full h-full justify-center flex-col items-center">
+      <div className="w-full h-full  flex flex-col justify-end items-center">
+        <Text
+          delay={0.6}
+        >
+          <div className="flex z-10 text-white"
+            style={{
+              fontSize: "clamp(1rem,3vw,200rem)",
+            }}
+          >your
+            <span className='text-transparent select-none'>
+              ----------------------------------------</span>web3
+            <span className='text-transparent select-none'>
+
+              --------------------------</span>
+            card
+          </div>
+        </Text>
+
+        <div className="flex absolute z-0 inset-0 w-full h-full justify-center flex-col items-center">
           <Image
             src="/bg-logo-2.svg"
-            width={200}
-            height={200}
+            width={400}
+            height={400}
             alt='bg'
-            className='h-[100vh] w-auto '
+            className='h-[30vh] md:h-[40vw] w-auto '
           />
         </div>
-        <Text
-        delay={0.6}
+        {/* <Text
+          delay={0.6}
         >
-          <div className="ber z-20 hidden md:flex   leading-none text-black"
+          <div className="ber z-20  md:flex   leading-none text-white "
             style={{
-              fontSize: "clamp(1rem,35vw,200rem)",
-              lineHeight: 'clamp(1rem,30vw,200rem)'
+              fontSize: "clamp(1rem,24vw,200rem)",
+              paddingBottom: "clamp(1rem,3vw,200rem)",
+
+              lineHeight: 'clamp(1rem,15vw,200rem)'
             }}
           >SCRATCH</div>
-        </Text>
-         {/* <div className="flex z-10 text-black"
-          style={{
-            fontSize: "clamp(1rem,3vw,200rem)",
-          }}
-        >{"START HERE->"}</div> */}
-       
+        </Text> */}
+
 
       </div>
     </div>

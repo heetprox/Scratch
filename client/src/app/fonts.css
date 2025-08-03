@@ -7,9 +7,13 @@
   src: url("/fonts/navigator-hand.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Bekstap-Regular";
+  src: url("/fonts/Bekstap-Regular.otf") format("opentype");
+}
 .navigator-hand {
   font-family: "navigator-hand", sans-serif;
 }
 .ber {
-  font-family: "Bergurau-Regular", sans-serif;
+  font-family: "Bekstap-Regular", sans-serif;
 }
