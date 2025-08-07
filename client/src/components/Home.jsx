@@ -2,64 +2,110 @@ import Image from 'next/image'
 import React from 'react'
 import Text from './Text'
 import { MoveRight } from 'lucide-react'
+import LightRays from './LightRays'
 
 const Home = () => {
   return (
-    <div className='bg-[#000000] w-full h-[100vh]'>
+    <div className='bg-[#000] w-full h-[100vh]'>
+      {/* <LightRays
+    raysOrigin="top-center"
+    raysColor="#8D50F9"
+    raysSpeed={1.5}
+    lightSpread={0.8}
+    rayLength={1.2}
+    followMouse={true}
+    mouseInfluence={0.1}
+    noiseAmount={0.1}
+    distortion={0.05}
+    className="custom-rays"
+  /> */}
+      <div className="w-full h-full  flex flex-col justify-between items-center">
+        <div className="h-[30vh]"></div>
+      <h1
+      style={{
+        fontSize: "clamp(1rem, 8vw, 10rem)",
+        lineHeight: "clamp(1rem, 7vw, 10rem)",
+      }}
+      className=' f1  text-[#fefff3]  scale-y-95 tracking-tight text-center'>Every Tap Tells  <br />  a Story</h1>
 
-      <div className="w-full h-full  flex flex-col justify-end items-center">
-        <Text
-          delay={0.6}
+        <div className="  w-full h-full items-end grid grid-cols-5 gap-3 "
+          style={{
+            padding: "0 clamp(1rem, 2vw, 40rem)",
+          }}
         >
-          <div className="flex z-10 text-white"
+
+          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#7A78FF] aspect-square w-full h-auto  rounded-full"
             style={{
-              fontSize: "clamp(1rem,3vw,200rem)",
-            }}
-          >your
-            <span className='text-transparent select-none'>
-              ----------------------------------------</span>web3
-            <span className='text-transparent select-none'>
-
-              --------------------------</span>
-            card
-          </div>
-        </Text>
-
-        <div className="flex absolute z-0 inset-0 w-full h-full justify-end flex-col items-center md:items-end"
-        style={{
-              padding: "0 clamp(1rem, 2vw, 40rem)",
-        }}
-        >
-
-          <div className="flex flex-col bg-gradient-to-tl from-neutral-700/90 via-black to-neutral-400/60 w-[90%] md:w-[60%] h-[60vh] md:h-[35vw] border-t-4 border-x-4 border-white/60 rounded-t-[20vw] md:rounded-t-[6vw]"
-            style={{
-              padding: "clamp(1rem, 2vw, 40rem)",
-              gap: "clamp(1rem, 1vw, 40rem)",
             }}
           >
-            <div className="h-[30vh] md:h-[8.5vw]"
+             <div className="h-auto aspect-square rounded-full bg-black p-1 w-[65%]"
             >
-              <Image
-                src="/bg-logo-2.svg"
-                width={400}
-                height={400}
-                alt='bg'
-                className='select-none rounded-l-full w-fit h-full '
-              />
-            </div> 
-            <div className="h-[30vh] md:h-[8.5vw]"
-            >
-              <Image
-                src="/heet.jpg"
-                width={400}
-                height={400}
-                alt='bg'
-                className='select-none rounded-full border-4 border-white/90 w-fit h-full '
-              />
+              
             </div>
-            
           </div>
 
+
+            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#00A652] aspect-square w-full h-auto  rounded-4xl"
+            style={{
+            }}
+          >
+            <div className="h-[70%]"
+            >
+              <Image
+                src="/shapes/2.svg"
+                width={400}
+                height={400}
+                alt='bg'
+                className='select-none w-fit h-full '
+              />
+            </div>
+          </div>
+
+            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FF6D38] aspect-square w-full h-auto  rounded-4xl"
+            style={{
+              clipPath:"polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
+            }}
+          >
+            <div className="h-[60%] bg-black p-1 w-[60%]"
+            style={{
+              clipPath:"polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
+            }}
+            >
+              
+            </div>
+          </div>
+
+            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FFC412] aspect-square w-full h-auto  rounded-4xl"
+            style={{
+            }}
+          >
+            <div className="h-[70%]"
+            >
+              <Image
+                src="/shapes/3.svg"
+                width={400}
+                height={400}
+                alt='bg'
+                className='select-none w-fit h-full '
+              />
+            </div>
+          </div>
+
+            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#478BFF] aspect-square w-full h-auto  rounded-full"
+            style={{
+            }}
+          >
+            <div className="h-[70%]"
+            >
+              <Image
+                src="/shapes/5.svg"
+                width={400}
+                height={400}
+                alt='bg'
+                className='select-none w-fit h-full '
+              />
+            </div>
+          </div>
         </div>
         {/* <Text
           delay={0.6}

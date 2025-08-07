@@ -11,8 +11,16 @@
   font-family: "Bekstap-Regular";
   src: url("/fonts/Bekstap-Regular.otf") format("opentype");
 }
+
+@font-face {
+  font-family: "OldschoolGrotesk-NormalExtraBold";
+  src: url("/fonts/OldschoolGrotesk-NormalExtraBold.otf") format("opentype");
+}
 .navigator-hand {
   font-family: "navigator-hand", sans-serif;
+}
+.f1 {
+  font-family: "OldschoolGrotesk-NormalExtraBold", sans-serif;
 }
 .ber {
   font-family: "Bekstap-Regular", sans-serif;
