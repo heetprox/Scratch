@@ -2,7 +2,7 @@ import "./globals.css";
 import "./fonts.css";
 import { Web3Provider } from "../context/Provider";
 import { ViewTransitions } from "next-view-transitions";
-import Nav from "@/components/Nav";
+import Navbar from "@/components/Navbar";
 
 export const metadata = {
   title: "Create Next App",
@@ -19,7 +19,7 @@ export default function RootLayout({
         className={`navigator-hand bg-[#FFE6CD] min-h-screen antialiased`}
       >
         <Web3Provider>
-          {/* <Nav /> */}
+          <Navbar />
         {children}
         </Web3Provider>
       </body>
