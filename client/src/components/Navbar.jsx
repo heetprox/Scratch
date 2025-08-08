@@ -36,6 +36,7 @@ export default function Navbar() {
                     }}
   
                     animate={hidden ? "hidden" : "vissible"}>
+                    <div className="w-[15%]  sus text-sm ">
                         <Link href={"/"} className="text-[#ffd500] ">
                            Scratch
                         </Link>
