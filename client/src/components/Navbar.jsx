@@ -9,7 +9,7 @@ import SimpleButton from "./SimpleButton";
   
 export default function Navbar() {
     const [hidden, setHidden] = useState(false);
-    const { scrollY } = useScroll();
+    const { scrollY } = useScroll();   
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious();
