@@ -6,9 +6,11 @@ import { navbarItems } from "@/constants";
 import { useMotionValueEvent, useScroll, motion } from "framer-motion";
 import TextHover from "./animation/TextHover";
 import SimpleButton from "./SimpleButton";
+  
 export default function Navbar() {
     const [hidden, setHidden] = useState(false);
     const { scrollY } = useScroll();   
+
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious();
         if (previous && latest > previous) {
