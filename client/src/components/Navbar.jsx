@@ -6,6 +6,7 @@ import { navbarItems } from "@/constants";
 import { useMotionValueEvent, useScroll, motion } from "framer-motion";
 import TextHover from "./animation/TextHover";
 import SimpleButton from "./SimpleButton";
+import { PaymentDocs } from "@/components/PaymentDocs";
   
 export default function Navbar() {
     const [hidden, setHidden] = useState(false);
@@ -53,6 +54,7 @@ export default function Navbar() {
                                 />
                             </Link>
                         ))}
+                        <PaymentDocs />
                     </div>
                     <div className="w-[25%]   flex justify-end">
                         <SimpleButton title="Login" href="/auth/signin" />
