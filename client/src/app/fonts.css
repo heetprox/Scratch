@@ -8,6 +8,11 @@
 }
 
 @font-face {
+  font-family: "BADABB";
+  src: url("/fonts/BADABB.ttf") format("truetype");
+}
+
+@font-face {
   font-family: "Bekstap-Regular";
   src: url("/fonts/Bekstap-Regular.otf") format("opentype");
 }
@@ -21,6 +26,9 @@
 }
 .f1 {
   font-family: "OldschoolGrotesk-NormalExtraBold", sans-serif;
+}
+.pro {
+  font-family: "BADABB", sans-serif;
 }
 .ber {
   font-family: "Bekstap-Regular", sans-serif;

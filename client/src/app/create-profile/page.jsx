@@ -14,28 +14,36 @@ const CreateProfilePage = () => {
   const [isCheckingWallet, setIsCheckingWallet] = useState(true);
 
   useEffect(() => {
-    // Check if wallet is connected
-    if (!isConnected) {
-      // Show wallet connection popup
-      const connectWallet = async () => {
-        try {
-          setIsCheckingWallet(true);
-          await connect();
-        } catch (err) {
-          console.error('Failed to connect wallet:', err);
-          // Redirect back to home if connection fails
-          router.push('/');
-        } finally {
-          setIsCheckingWallet(false);
+    const initializeWallet = async () => {
+      try {
+        setIsCheckingWallet(true);
+        
+        // Check if wallet is connected
+        if (!isConnected) {
+          // Show wallet connection popup
+          try {
+            await connect();
+          } catch (err) {
+            console.error('Failed to connect wallet:', err);
+            // Redirect back to home if connection fails
+            router.push('/');
+            return;
+          }
         }
-      };
-      
-      connectWallet();
-    } else {
-      setIsCheckingWallet(false);
-      // Check if user already has a profile
-      checkExistingProfile();
-    }
+        
+        // If we have an account, check for existing profile
+        if (account) {
+          await checkExistingProfile();
+        }
+      } catch (err) {
+        console.error('Wallet initialization error:', err);
+        setError('Failed to initialize wallet connection');
+      } finally {
+        setIsCheckingWallet(false);
+      }
+    };
+    
+    initializeWallet();
   }, [isConnected, connect, router, account]);
 
   // Function to check if the connected wallet already has a profile

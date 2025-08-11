@@ -19,7 +19,7 @@ export default function RootLayout({
         className={`navigator-hand bg-[#FFE6CD] min-h-screen antialiased`}
       >
         <Web3Provider>
-          <Navbar />
+          {/* <Navbar /> */}
         {children}
         </Web3Provider>
       </body>

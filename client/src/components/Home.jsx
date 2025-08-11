@@ -28,7 +28,7 @@ const Home = () => {
   };
 
   return (
-    <div className='bg-[#000] w-full h-[100vh]'>
+    <div className='bg-[#F58300] w-full h-[100vh]'>
       {/* <LightRays
     raysOrigin="top-center"
     raysColor="#8D50F9"
@@ -42,43 +42,73 @@ const Home = () => {
     className="custom-rays"
   /> */}
       <div className="w-full h-full flex flex-col justify-between items-center">
-        <div className="h-[30vh]"></div>
-      <h1
-      style={{
-        fontSize: "clamp(1rem, 8vw, 10rem)",
-        lineHeight: "clamp(1rem, 7vw, 10rem)",
-      }}
-      className='f1 text-[#fefff3] scale-y-95 tracking-tight text-center'>Every Tap Tells  <br />  a Story</h1>
-      
-      {/* Action Buttons */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
-        {!isConnected ? (
-          <button 
-            onClick={handleConnect}
-            className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
-          >
-            <Wallet size={20} />
-            Connect Wallet
-          </button>
-        ) : (
-          <>
-            <button 
-              onClick={handleCreateProfile}
+        <div className="h-[10vh]"></div>
+        <div className="flex flex-col gap-10">
+          <div className="relative">
+
+            <h1
+              style={{
+                fontSize: "clamp(1rem, 6vw, 100rem)",
+                lineHeight: "clamp(1rem, 7vw, 10rem)",
+              }}
+              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every Tap Tells
+            </h1>
+            <h1
+              style={{
+                fontSize: "clamp(1rem, 6vw, 100rem)",
+                lineHeight: "clamp(1rem, 7vw, 10rem)",
+              }}
+              className='pro absolute inset-0 ml-3 mt-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells
+            </h1>
+          </div>
+
+          <div className="relative">
+
+            <h1
+              style={{
+                fontSize: "clamp(1rem, 20vw, 100rem)",
+                lineHeight: "clamp(1rem, 16vw, 100rem)",
+              }}
+              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Story
+            </h1>
+            <h1
+              style={{
+                fontSize: "clamp(1rem, 20vw, 100rem)",
+                lineHeight: "clamp(1rem, 10vw, 100rem)",
+              }}
+              className='pro absolute inset-0 ml-2 mt-2  text-[#000000] text-center z-10 uppercase'>Story
+            </h1>
+          </div>
+        </div>
+        {/* Action Buttons */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
+          {!isConnected ? (
+            <button
+              onClick={handleConnect}
               className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
             >
-              <UserPlus size={20} />
-              Create Profile
+              <Wallet size={20} />
+              Connect Wallet
             </button>
-            <button 
-              onClick={handleDemoPayment}
-              className="bg-[#00A652] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
-            >
-              <ExternalLink size={20} />
-              Try Demo Payment
-            </button>
-          </>
-        )}
-      </div>
+          ) : (
+            <>
+              <button
+                onClick={handleCreateProfile}
+                className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
+              >
+                <UserPlus size={20} />
+                Create Profile
+              </button>
+              <button
+                onClick={handleDemoPayment}
+                className="bg-[#00A652] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
+              >
+                <ExternalLink size={20} />
+                Try Demo Payment
+              </button>
+            </>
+          )}
+        </div>
 
         <div className="  w-full h-full items-end grid grid-cols-5 gap-3 "
           style={{
@@ -90,14 +120,14 @@ const Home = () => {
             style={{
             }}
           >
-             <div className="h-auto aspect-square rounded-full bg-black p-1 w-[65%]"
+            <div className="h-auto aspect-square rounded-full bg-black p-1 w-[65%]"
             >
-              
+
             </div>
           </div>
 
 
-            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#00A652] aspect-square w-full h-auto  rounded-4xl"
+          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#00A652] aspect-square w-full h-auto  rounded-4xl"
             style={{
             }}
           >
@@ -113,21 +143,21 @@ const Home = () => {
             </div>
           </div>
 
-            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FF6D38] aspect-square w-full h-auto  rounded-4xl"
+          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FF6D38] aspect-square w-full h-auto  rounded-4xl"
             style={{
-              clipPath:"polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
+              clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
             }}
           >
             <div className="h-[60%] bg-black p-1 w-[60%]"
-            style={{
-              clipPath:"polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
-            }}
+              style={{
+                clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
+              }}
             >
-              
+
             </div>
           </div>
 
-            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FFC412] aspect-square w-full h-auto  rounded-4xl"
+          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FFC412] aspect-square w-full h-auto  rounded-4xl"
             style={{
             }}
           >
@@ -143,7 +173,7 @@ const Home = () => {
             </div>
           </div>
 
-            <div className="flex flex-col justify-center items-center z-[999] relative bg-[#478BFF] aspect-square w-full h-auto  rounded-full"
+          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#478BFF] aspect-square w-full h-auto  rounded-full"
             style={{
             }}
           >

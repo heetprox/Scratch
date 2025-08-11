@@ -1,16 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { navbarItems } from "@/constants";
 import { useMotionValueEvent, useScroll, motion } from "framer-motion";
 import TextHover from "./animation/TextHover";
 import SimpleButton from "./SimpleButton";
 import { PaymentDocs } from "@/components/PaymentDocs";
+import { Web3Context } from "../context/Provider";
+import { useRouter } from "next/navigation";
   
 export default function Navbar() {
     const [hidden, setHidden] = useState(false);
-    const { scrollY } = useScroll();   
+    const { scrollY } = useScroll();
+    const { isConnected, connect, account } = useContext(Web3Context);
+    const router = useRouter();
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious();
@@ -20,6 +24,18 @@ export default function Navbar() {
             setHidden(false);
         }
     });
+
+    const handleConnect = async () => {
+        try {
+            await connect();
+        } catch (error) {
+            console.error('Failed to connect wallet:', error);
+        }
+    };
+
+    const handleProfileClick = () => {
+        router.push('/create-profile');
+    };
 
     return (
         <>
@@ -56,10 +72,27 @@ export default function Navbar() {
                         ))}
                         <PaymentDocs />
                     </div>
-                    <div className="w-[25%]   flex justify-end">
-                        <SimpleButton title="Login" href="/auth/signin" />
-                        <div className="w-2"></div>
-                        <SimpleButton title="Get Started" href="/auth/signin" />
+                    <div className="w-[25%] flex justify-end gap-2">
+                        {!isConnected ? (
+                            <button 
+                                onClick={handleConnect}
+                                className="bg-[#7A78FF] text-white px-3 py-1 rounded-md flex items-center gap-1 hover:bg-[#6563d4] transition-colors text-sm"
+                            >
+                                Connect Wallet
+                            </button>
+                        ) : (
+                            <>
+                                <div className="bg-black/50 backdrop-blur-sm px-3 py-1 rounded-md border border-gray-700 text-sm">
+                                    {account?.slice(0, 6)}...{account?.slice(-4)}
+                                </div>
+                                <button 
+                                    onClick={handleProfileClick}
+                                    className="bg-[#7A78FF] text-white px-3 py-1 rounded-md flex items-center gap-1 hover:bg-[#6563d4] transition-colors text-sm"
+                                >
+                                    My Profile
+                                </button>
+                            </>
+                        )}
                     </div>
                 </motion.nav>
             </div>
