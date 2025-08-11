@@ -1,8 +1,11 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useContext } from 'react'
 import Text from './Text'
-import { MoveRight } from 'lucide-react'
+import { MoveRight, Wallet, UserPlus, ExternalLink } from 'lucide-react'
 import LightRays from './LightRays'
+import { Web3Context } from '../context/Provider'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const Home = () => {
   return (
