@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Web3Context } from '../context/Provider';
 import Home from '@/components/Home';
+import Video from '@/components/Video';
 
 export default function HomePage({ profiles = [] }) {
   const router = useRouter();
@@ -26,8 +27,10 @@ export default function HomePage({ profiles = [] }) {
   };
 
   return (
-    <div className="w-full bg-[#FFE6CD] min-h-screen  h-full">
+    <div className="w-full bg-[#F58300] min-h-screen  h-full">
       <Home />
+      <Video />
+
     </div>
   );
 }
