@@ -8,6 +8,25 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 const Home = () => {
+  const { isConnected, connect, account } = useContext(Web3Context);
+  const router = useRouter();
+
+  const handleConnect = async () => {
+    try {
+      await connect();
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
+
+  const handleCreateProfile = () => {
+    router.push('/create-profile');
+  };
+
+  const handleDemoPayment = () => {
+    router.push('/profile/demo');
+  };
+
   return (
     <div className='bg-[#000] w-full h-[100vh]'>
       {/* <LightRays
@@ -22,14 +41,44 @@ const Home = () => {
     distortion={0.05}
     className="custom-rays"
   /> */}
-      <div className="w-full h-full  flex flex-col justify-between items-center">
+      <div className="w-full h-full flex flex-col justify-between items-center">
         <div className="h-[30vh]"></div>
       <h1
       style={{
         fontSize: "clamp(1rem, 8vw, 10rem)",
         lineHeight: "clamp(1rem, 7vw, 10rem)",
       }}
-      className=' f1  text-[#fefff3]  scale-y-95 tracking-tight text-center'>Every Tap Tells  <br />  a Story</h1>
+      className='f1 text-[#fefff3] scale-y-95 tracking-tight text-center'>Every Tap Tells  <br />  a Story</h1>
+      
+      {/* Action Buttons */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
+        {!isConnected ? (
+          <button 
+            onClick={handleConnect}
+            className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
+          >
+            <Wallet size={20} />
+            Connect Wallet
+          </button>
+        ) : (
+          <>
+            <button 
+              onClick={handleCreateProfile}
+              className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
+            >
+              <UserPlus size={20} />
+              Create Profile
+            </button>
+            <button 
+              onClick={handleDemoPayment}
+              className="bg-[#00A652] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
+            >
+              <ExternalLink size={20} />
+              Try Demo Payment
+            </button>
+          </>
+        )}
+      </div>
 
         <div className="  w-full h-full items-end grid grid-cols-5 gap-3 "
           style={{
@@ -125,6 +174,15 @@ const Home = () => {
 
 
       </div>
+
+      {/* Connected Account Display */}
+      {isConnected && (
+        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-700">
+          <p className="text-white text-sm">
+            {account?.slice(0, 6)}...{account?.slice(-4)}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -36,8 +36,9 @@ const ProfileForm = ({
             { network: 'Sepolia', address: account },
             { network: 'Polygon', address: account }
           ];
-        } else {
-          // Update existing wallet addresses with the connected account
+        } else if (!initialData) {
+          // Only auto-fill wallet addresses for new profiles
+          // Don't override existing wallet addresses for profile edits
           updatedWallets = updatedWallets.map(wallet => ({
             ...wallet,
             address: account
@@ -50,7 +51,7 @@ const ProfileForm = ({
         };
       });
     }
-  }, [account, isConnected]);
+  }, [account, isConnected, initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,10 +111,30 @@ const ProfileForm = ({
       setError('You must connect your wallet to continue');
       return;
     }
+
+    // Validate wallet addresses
+    const invalidWallets = formData.walletAddresses.filter(wallet => 
+      !wallet.address || !wallet.network
+    );
+
+    if (invalidWallets.length > 0) {
+      setError('All wallet addresses must have both network and address');
+      return;
+    }
+
+    // Standardize wallet addresses to lowercase
+    const standardizedFormData = {
+      ...formData,
+      walletAddresses: formData.walletAddresses.map(wallet => ({
+        ...wallet,
+        address: wallet.address.toLowerCase()
+      }))
+    };
     
     try {
-      await onSubmit(formData);
+      await onSubmit(standardizedFormData);
     } catch (err) {
+      console.error('Profile submission error:', err);
       setError(err.message || 'Failed to save profile');
     }
   };

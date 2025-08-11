@@ -49,7 +49,7 @@ const CreateProfilePage = () => {
       if (response.ok) {
         const profiles = await response.json();
         
-        // Check if any profile has the current wallet address
+        // Check if any profile has the current wallet address (case-insensitive)
         const userProfile = profiles.find(profile => 
           profile.walletAddresses.some(wallet => 
             wallet.address.toLowerCase() === account.toLowerCase()
@@ -58,11 +58,16 @@ const CreateProfilePage = () => {
         
         if (userProfile) {
           // User already has a profile, redirect to it
+          console.log('Existing profile found, redirecting to:', userProfile.username);
           router.push(`/profile/${userProfile.username}`);
+          return true;
         }
+        return false;
       }
     } catch (err) {
       console.error('Error checking existing profile:', err);
+      setError('Failed to check existing profiles. Please try again.');
+      return false;
     } finally {
       setIsLoading(false);
     }
