@@ -13,13 +13,17 @@
 }
 
 @font-face {
-  font-family: "Bekstap-Regular";
-  src: url("/fonts/Bekstap-Regular.otf") format("opentype");
+  font-family: "OldschoolGrotesk-NormalBold";
+  src: url("/fonts/OldschoolGrotesk-NormalBold.otf") format("opentype");
 }
 
 @font-face {
   font-family: "OldschoolGrotesk-NormalExtraBold";
   src: url("/fonts/OldschoolGrotesk-NormalExtraBold.otf") format("opentype");
+}
+@font-face {
+  font-family: "NeueHaasUnicaPro-Medium";
+  src: url("/fonts/NeueHaasUnicaPro-Medium.ttf") format("truetype");
 }
 .navigator-hand {
   font-family: "navigator-hand", sans-serif;
@@ -31,5 +35,5 @@
   font-family: "BADABB", sans-serif;
 }
 .ber {
-  font-family: "Bekstap-Regular", sans-serif;
+  font-family: "NeueHaasUnicaPro-Medium", sans-serif;
 }

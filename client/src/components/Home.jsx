@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { useContext } from 'react'
 import Text from './Text'
-import { MoveRight, Wallet, UserPlus, ExternalLink } from 'lucide-react'
+import { MoveRight, Wallet, UserPlus, ExternalLink, BowArrow } from 'lucide-react'
 import LightRays from './LightRays'
 import { Web3Context } from '../context/Provider'
 import Link from 'next/link'
@@ -51,14 +51,14 @@ const Home = () => {
                 fontSize: "clamp(1rem, 6vw, 100rem)",
                 lineHeight: "clamp(1rem, 7vw, 10rem)",
               }}
-              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every Tap Tells
+              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every Tap Tells A
             </h1>
             <h1
               style={{
                 fontSize: "clamp(1rem, 6vw, 100rem)",
                 lineHeight: "clamp(1rem, 7vw, 10rem)",
               }}
-              className='pro absolute inset-0 ml-3 mt-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells
+              className='pro absolute inset-0 ml-3 mt-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
             </h1>
           </div>
 
@@ -83,25 +83,37 @@ const Home = () => {
         {/* Action Buttons */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
           {!isConnected ? (
-            <button
-              onClick={handleConnect}
-              className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
-            >
-              <Wallet size={20} />
-              Connect Wallet
-            </button>
+            <div className="relative">
+              <button
+                onClick={handleConnect}
+                className="bg-[#000000] text-[#fff] px-6  rounded-3xl cursor-pointer leading-16 text-md flex  ber items-center gap-2 relative z-50 uppercase transition-colors"
+              >
+                <div className="">
+                  Connect Wallet
+                </div>
+                <BowArrow />
+
+              </button>
+              <button
+                onClick={handleConnect}
+                className="bg-[#ffffff] absolute inset-0 text-[#fff] px-6  rounded-full leading-16 z-30 text-md flex  ber items-center
+              translate-3 gap-2 uppercase transition-colors"
+              >
+                Connect Wallet
+              </button>
+            </div>
           ) : (
             <>
               <button
                 onClick={handleCreateProfile}
-                className="bg-[#7A78FF] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#6563d4] transition-colors"
+                className="bg-[#000000] text-[#F7ED35] px-6 py-3 rounded-full flex  items-center gap-2 hover:bg-[#6563d4] transition-colors"
               >
                 <UserPlus size={20} />
                 Create Profile
               </button>
               <button
                 onClick={handleDemoPayment}
-                className="bg-[#00A652] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
+                className="bg-[#000000] text-[#F7ED35] px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
               >
                 <ExternalLink size={20} />
                 Try Demo Payment
@@ -116,91 +128,10 @@ const Home = () => {
           }}
         >
 
-          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#7A78FF] aspect-square w-full h-auto  rounded-full"
-            style={{
-            }}
-          >
-            <div className="h-auto aspect-square rounded-full bg-black p-1 w-[65%]"
-            >
-
-            </div>
-          </div>
 
 
-          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#00A652] aspect-square w-full h-auto  rounded-4xl"
-            style={{
-            }}
-          >
-            <div className="h-[70%]"
-            >
-              <Image
-                src="/shapes/2.svg"
-                width={400}
-                height={400}
-                alt='bg'
-                className='select-none w-fit h-full '
-              />
-            </div>
-          </div>
 
-          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FF6D38] aspect-square w-full h-auto  rounded-4xl"
-            style={{
-              clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
-            }}
-          >
-            <div className="h-[60%] bg-black p-1 w-[60%]"
-              style={{
-                clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)"
-              }}
-            >
-
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#FFC412] aspect-square w-full h-auto  rounded-4xl"
-            style={{
-            }}
-          >
-            <div className="h-[70%]"
-            >
-              <Image
-                src="/shapes/3.svg"
-                width={400}
-                height={400}
-                alt='bg'
-                className='select-none w-fit h-full '
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-center items-center z-[999] relative bg-[#478BFF] aspect-square w-full h-auto  rounded-full"
-            style={{
-            }}
-          >
-            <div className="h-[70%]"
-            >
-              <Image
-                src="/shapes/5.svg"
-                width={400}
-                height={400}
-                alt='bg'
-                className='select-none w-fit h-full '
-              />
-            </div>
-          </div>
         </div>
-        {/* <Text
-          delay={0.6}
-        >
-          <div className="ber z-20  md:flex   leading-none text-white "
-            style={{
-              fontSize: "clamp(1rem,24vw,200rem)",
-              paddingBottom: "clamp(1rem,3vw,200rem)",
-
-              lineHeight: 'clamp(1rem,15vw,200rem)'
-            }}
-          >SCRATCH</div>
-        </Text> */}
 
 
       </div>
