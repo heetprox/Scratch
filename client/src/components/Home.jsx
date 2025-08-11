@@ -28,22 +28,10 @@ const Home = () => {
   };
 
   return (
-    <div className='bg-[#F58300] w-full h-[100vh]'>
-      {/* <LightRays
-    raysOrigin="top-center"
-    raysColor="#8D50F9"
-    raysSpeed={1.5}
-    lightSpread={0.8}
-    rayLength={1.2}
-    followMouse={true}
-    mouseInfluence={0.1}
-    noiseAmount={0.1}
-    distortion={0.05}
-    className="custom-rays"
-  /> */}
+    <div className='bg-[#F58300] w-full h-full'>
       <div className="w-full h-full flex flex-col justify-between items-center">
         <div className="h-[10vh]"></div>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <div className="relative">
 
             <h1
@@ -58,30 +46,29 @@ const Home = () => {
                 fontSize: "clamp(1rem, 6vw, 100rem)",
                 lineHeight: "clamp(1rem, 7vw, 10rem)",
               }}
-              className='pro absolute inset-0 ml-3 mt-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
+              className='pro absolute inset-0 translate-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
             </h1>
           </div>
 
-          <div className="relative">
+          <div className="relative pb-10">
 
             <h1
               style={{
                 fontSize: "clamp(1rem, 20vw, 100rem)",
-                lineHeight: "clamp(1rem, 16vw, 100rem)",
+                lineHeight: "clamp(1rem, 19vw, 100rem)",
               }}
               className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Story
             </h1>
             <h1
               style={{
                 fontSize: "clamp(1rem, 20vw, 100rem)",
-                lineHeight: "clamp(1rem, 10vw, 100rem)",
+                lineHeight: "clamp(1rem, 12vw, 100rem)",
               }}
-              className='pro absolute inset-0 ml-2 mt-2  text-[#000000] text-center z-10 uppercase'>Story
+              className='pro absolute inset-0 translate-2  text-[#000000] text-center z-10 uppercase'>Story
             </h1>
           </div>
         </div>
-        {/* Action Buttons */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
+        <div className="absolute mt-20 top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
           {!isConnected ? (
             <div className="relative">
               <button
