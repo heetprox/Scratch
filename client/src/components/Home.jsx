@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React, { useContext } from 'react'
 import Text from './Text'
-import { MoveRight, Wallet, UserPlus, ExternalLink, BowArrow } from 'lucide-react'
+import { MoveRight, Wallet, UserPlus, ExternalLink, BowArrow, HatGlasses, PackagePlus } from 'lucide-react'
 import LightRays from './LightRays'
 import { Web3Context } from '../context/Provider'
 import Link from 'next/link'
@@ -36,39 +36,39 @@ const Home = () => {
 
             <h1
               style={{
-                fontSize: "clamp(1rem, 6vw, 100rem)",
-                lineHeight: "clamp(1rem, 7vw, 10rem)",
+                fontSize: "clamp(3rem, 6vw, 100rem)",
+                lineHeight: "clamp(3rem, 7vw, 10rem)",
               }}
               className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every Tap Tells A
             </h1>
             <h1
               style={{
-                fontSize: "clamp(1rem, 6vw, 100rem)",
-                lineHeight: "clamp(1rem, 7vw, 10rem)",
+                fontSize: "clamp(3rem, 6vw, 100rem)",
+                lineHeight: "clamp(3rem, 7vw, 10rem)",
               }}
-              className='pro absolute inset-0 translate-3  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
+              className='pro absolute inset-0  translate-1.5 md:translate-2  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
             </h1>
           </div>
 
-          <div className="relative pb-10">
+          <div className="relative ">
 
             <h1
               style={{
-                fontSize: "clamp(1rem, 20vw, 100rem)",
-                lineHeight: "clamp(1rem, 19vw, 100rem)",
+                fontSize: "clamp(8rem, 20vw, 100rem)",
+                lineHeight: "clamp(6rem, 19vw, 100rem)",
               }}
               className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Story
             </h1>
             <h1
               style={{
-                fontSize: "clamp(1rem, 20vw, 100rem)",
+                fontSize: "clamp(8rem, 20vw, 100rem)",
                 lineHeight: "clamp(1rem, 12vw, 100rem)",
               }}
               className='pro absolute inset-0 translate-2  text-[#000000] text-center z-10 uppercase'>Story
             </h1>
           </div>
         </div>
-        <div className="absolute mt-20 top-1/2 left-1/2 transform -translate-x-1/2 translate-y-16 flex flex-col md:flex-row gap-4 z-10">
+        <div className="flex md:flex-row flex-col gap-5 translate-y-2">
           {!isConnected ? (
             <div className="relative">
               <button
@@ -91,20 +91,47 @@ const Home = () => {
             </div>
           ) : (
             <>
-              <button
-                onClick={handleCreateProfile}
-                className="bg-[#000000] text-[#F7ED35] px-6 py-3 rounded-full flex  items-center gap-2 hover:bg-[#6563d4] transition-colors"
-              >
-                <UserPlus size={20} />
-                Create Profile
-              </button>
-              <button
-                onClick={handleDemoPayment}
-                className="bg-[#000000] text-[#F7ED35] px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-[#008a44] transition-colors"
-              >
-                <ExternalLink size={20} />
-                Try Demo Payment
-              </button>
+              <Link href="/create-profile" className="relative">
+                <button
+                  onClick={handleCreateProfile}
+                  className="bg-[#000000] text-[#fff] px-6  rounded-3xl cursor-pointer leading-16 text-md flex  ber items-center gap-2 relative z-50 uppercase transition-colors"
+                >
+                  <div className="">
+                    start building
+                  </div>
+                  <PackagePlus />
+
+                </button>
+                <button
+                  onClick={handleCreateProfile}
+                  className="bg-[#ffffff] absolute inset-0 text-[#fff] px-6  rounded-full leading-16 z-30 text-md flex  ber items-center
+              translate-3 gap-2 uppercase transition-colors"
+                >
+                  start building
+                </button>
+              </Link>
+              <Link href="/profile/demo" className="relative flex justify-center">
+
+                <button
+                  onClick={handleConnect}
+                  className="bg-[#000000] text-[#fff] px-6  rounded-3xl cursor-pointer leading-16 text-md flex  ber items-center gap-2 relative z-50 uppercase transition-colors"
+                >
+                  <div className="">
+                    See demo
+                  </div>
+                  <HatGlasses />
+
+                </button>
+                <button
+                  onClick={handleDemoPayment}
+                  className="bg-[#ffffff] absolute inset-0 text-[#fff] px-6 w-fit rounded-full leading-16 z-30 text-md select-none overflow-hidden flex  ber items-center
+              translate-3 gap-2 uppercase transition-colors"
+                >
+                  see demo ccc
+
+                </button>
+
+              </Link>
             </>
           )}
         </div>
@@ -123,10 +150,9 @@ const Home = () => {
 
       </div>
 
-      {/* Connected Account Display */}
       {isConnected && (
-        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-700">
-          <p className="text-white text-sm">
+        <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-sm px-4  py-2 rounded-lg border border-gray-700">
+          <p className="text-white text-md">
             {account?.slice(0, 6)}...{account?.slice(-4)}
           </p>
         </div>
