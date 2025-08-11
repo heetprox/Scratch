@@ -4,7 +4,7 @@ import React, { useState, useContext } from 'react';
 import { Web3Context } from '../context/Provider';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
-import { MoveRight, Copy, ExternalLink } from 'lucide-react';
+import { MoveRight, Copy, ExternalLink, Check } from 'lucide-react';
 
 const Profile = ({ profile, isOwner = false }) => {
   const { account, sendPayment, isConnected, connect } = useContext(Web3Context);
@@ -12,6 +12,7 @@ const Profile = ({ profile, isOwner = false }) => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [txHash, setTxHash] = useState('');
+  const [copiedAddress, setCopiedAddress] = useState('');
 
   const handlePayment = async () => {
     if (!profile || !account || !isConnected) return;
@@ -52,7 +53,10 @@ const Profile = ({ profile, isOwner = false }) => {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    // You could add a toast notification here
+    setCopiedAddress(text);
+    setTimeout(() => {
+      setCopiedAddress('');
+    }, 2000);
   };
 
   if (!profile) {
@@ -65,7 +69,15 @@ const Profile = ({ profile, isOwner = false }) => {
   }
 
   return (
-    <div className="bg-[#000] w-full min-h-screen">
+    <div className="bg-[#000] w-full min-h-screen relative">
+      {/* Toast Notification */}
+      {copiedAddress && (
+        <div className="fixed bottom-6 right-6 bg-[#222] text-[#fefff3] px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50 animate-fade-in">
+          <Check size={18} className="text-green-400" />
+          <span>Address copied to clipboard</span>
+        </div>
+      )}
+      
       <div className="w-full max-w-6xl mx-auto p-6">
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row gap-8 mb-12">
@@ -94,32 +106,49 @@ const Profile = ({ profile, isOwner = false }) => {
             
             {/* Wallet Addresses */}
             <div className="space-y-2 mb-6">
-              {profile.walletAddresses.map((wallet, index) => (
-                <div key={index} className="bg-[#111] p-3 rounded-xl border border-[#333] flex justify-between items-center">
-                  <div className="flex items-center">
-                    <span className="text-[#7A78FF] font-medium mr-2">{wallet.network}</span>
-                    <span className="text-[#fefff3] opacity-80">
-                      {wallet.address.substring(0, 8)}...{wallet.address.substring(wallet.address.length - 6)}
-                    </span>
+              <h3 className="text-lg font-medium text-[#fefff3] mb-2">Wallet Addresses</h3>
+              {profile.walletAddresses.map((wallet, index) => {
+                // Determine the explorer URL based on network
+                let explorerUrl = `https://etherscan.io/address/${wallet.address}`;
+                if (wallet.network.toLowerCase() === 'sepolia') {
+                  explorerUrl = `https://sepolia.etherscan.io/address/${wallet.address}`;
+                } else if (wallet.network.toLowerCase() === 'polygon') {
+                  explorerUrl = `https://polygonscan.com/address/${wallet.address}`;
+                } else if (wallet.network.toLowerCase() === 'arbitrum') {
+                  explorerUrl = `https://arbiscan.io/address/${wallet.address}`;
+                } else if (wallet.network.toLowerCase() === 'optimism') {
+                  explorerUrl = `https://optimistic.etherscan.io/address/${wallet.address}`;
+                }
+                
+                return (
+                  <div key={index} className="bg-[#111] p-4 rounded-xl border border-[#333] flex justify-between items-center hover:border-[#444] transition-colors">
+                    <div className="flex items-center">
+                      <span className="text-[#7A78FF] font-medium mr-3 px-2 py-1 bg-[#7A78FF]/10 rounded-md text-sm">{wallet.network}</span>
+                      <span className="text-[#fefff3] font-mono">
+                        {wallet.address.substring(0, 8)}...{wallet.address.substring(wallet.address.length - 6)}
+                      </span>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button 
+                        onClick={() => copyToClipboard(wallet.address)}
+                        className="text-[#fefff3] opacity-70 hover:opacity-100 p-1.5 hover:bg-[#222] rounded-md transition-colors"
+                        title="Copy address"
+                      >
+                        <Copy size={16} />
+                      </button>
+                      <a 
+                        href={explorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#fefff3] opacity-70 hover:opacity-100 p-1.5 hover:bg-[#222] rounded-md transition-colors"
+                        title="View on explorer"
+                      >
+                        <ExternalLink size={16} />
+                      </a>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => copyToClipboard(wallet.address)}
-                      className="text-[#fefff3] opacity-70 hover:opacity-100 p-1"
-                    >
-                      <Copy size={16} />
-                    </button>
-                    <a 
-                      href={`https://etherscan.io/address/${wallet.address}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#fefff3] opacity-70 hover:opacity-100 p-1"
-                    >
-                      <ExternalLink size={16} />
-                    </a>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           

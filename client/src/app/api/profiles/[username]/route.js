@@ -38,6 +38,33 @@ export async function PATCH(request, { params }) {
       );
     }
     
+    // Validate wallet addresses if provided
+    if (data.walletAddresses) {
+      if (data.walletAddresses.some(wallet => !wallet.network || !wallet.address)) {
+        return NextResponse.json(
+          { error: 'Invalid wallet addresses' },
+          { status: 400 }
+        );
+      }
+      
+      // Standardize Ethereum addresses (make them all lowercase)
+      data.walletAddresses = data.walletAddresses.map(wallet => ({
+        ...wallet,
+        address: wallet.address.toLowerCase()
+      }));
+      
+      // Remove duplicate addresses
+      const uniqueAddresses = new Map();
+      data.walletAddresses = data.walletAddresses.filter(wallet => {
+        const key = `${wallet.network}-${wallet.address}`;
+        if (uniqueAddresses.has(key)) {
+          return false;
+        }
+        uniqueAddresses.set(key, true);
+        return true;
+      });
+    }
+    
     // Update profile
     const updatedProfile = await updateScratchCard(username, data);
     return NextResponse.json(updatedProfile);

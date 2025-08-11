@@ -15,7 +15,6 @@ export function Web3Provider({ children }) {
   const [initializationError, setInitializationError] = useState(null);
   const [ethersProvider, setEthersProvider] = useState(null);
   
-  // Initialize ethers provider when connected
   useEffect(() => {
     const initProvider = async () => {
       if (window.ethereum && isConnected) {

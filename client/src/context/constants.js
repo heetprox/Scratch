@@ -3,7 +3,10 @@
 export const CONTRACT_ADDRESSES = {
   sepolia: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
   mainnet: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3" 
+  localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  polygon: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  arbitrum: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  optimism: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 };
 
 export const CONTRACT_ABI = require("../abi/Scratch.json").abi;

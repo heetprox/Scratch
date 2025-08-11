@@ -2,6 +2,7 @@
 
 import { useContext, useState, useEffect } from 'react';
 import { Web3Context } from '../context/Provider';
+import { MoveRight, Copy, AlertCircle, Check } from 'lucide-react';
 
 const ProfileForm = ({ 
   initialData, 
@@ -15,21 +16,34 @@ const ProfileForm = ({
     name: initialData?.name || '',
     image: initialData?.image || 'https://via.placeholder.com/150',
     description: initialData?.description || '',
-    walletAddresses: initialData?.walletAddresses || [{ network: 'Ethereum', address: '' }]
+    walletAddresses: initialData?.walletAddresses || []
   });
 
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState('');
 
   // Update wallet address when account changes
   useEffect(() => {
     if (account && isConnected) {
       setFormData(prev => {
-        const updatedWallets = [...prev.walletAddresses];
-        // Update the first wallet address with the connected account
-        if (updatedWallets.length > 0 && !updatedWallets[0].address) {
-          updatedWallets[0].address = account;
+        let updatedWallets = [...prev.walletAddresses];
+        
+        // If no wallets exist, add the connected account
+        if (updatedWallets.length === 0) {
+          updatedWallets = [
+            { network: 'Ethereum', address: account },
+            { network: 'Sepolia', address: account },
+            { network: 'Polygon', address: account }
+          ];
+        } else {
+          // Update existing wallet addresses with the connected account
+          updatedWallets = updatedWallets.map(wallet => ({
+            ...wallet,
+            address: account
+          }));
         }
+        
         return {
           ...prev,
           walletAddresses: updatedWallets
@@ -76,6 +90,12 @@ const ProfileForm = ({
     }));
   };
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedAddress(text);
+    setTimeout(() => setCopiedAddress(''), 2000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -86,8 +106,8 @@ const ProfileForm = ({
       return;
     }
     
-    if (formData.walletAddresses.some(wallet => !wallet.address)) {
-      setError('All wallet addresses must be filled');
+    if (!isConnected || formData.walletAddresses.length === 0) {
+      setError('You must connect your wallet to continue');
       return;
     }
     
@@ -175,54 +195,57 @@ const ProfileForm = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">{initialData ? 'Edit Profile' : 'Create Profile'}</h2>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
+        {initialData ? 'Edit Your Profile' : 'Create Your Profile'}
+      </h2>
       
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-100 flex items-start gap-2">
+          <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+          <p>{error}</p>
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Username*</label>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Username*</label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
             placeholder="your-unique-username"
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             disabled={!!initialData} // Cannot change username if editing
             required
           />
-          <p className="text-xs text-gray-500 mt-1">This will be your profile URL: /profile/your-username</p>
+          <p className="text-xs text-gray-500 mt-2">This will be your profile URL: /profile/your-username</p>
         </div>
         
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name*</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Name*</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="Your Name"
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required
           />
         </div>
         
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image*</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Profile Image</label>
           
-          <div className="flex items-center space-x-4">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col md:flex-row md:items-center gap-6">
             {formData.image && (
               <div className="flex-shrink-0">
                 <img 
                   src={formData.image} 
                   alt="Profile Preview" 
-                  className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                  className="w-28 h-28 rounded-full object-cover border-2 border-white shadow-md mx-auto md:mx-0"
                   onError={(e) => {
                     const target = e.target;
                     target.src = 'https://via.placeholder.com/150';
@@ -231,8 +254,8 @@ const ProfileForm = ({
               </div>
             )}
             
-            <div className="flex-grow">
-              <div className="mb-2">
+            <div className="flex-grow space-y-3">
+              <div>
                 <input
                   type="file"
                   accept="image/*"
@@ -243,13 +266,13 @@ const ProfileForm = ({
                 />
                 <label
                   htmlFor="image-upload"
-                  className="inline-block bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-400"
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-400"
                 >
                   {isUploading ? 'Uploading...' : formData.image !== 'https://via.placeholder.com/150' ? 'Change Image' : 'Upload Image'}
                 </label>
               </div>
               
-              <p className="text-xs text-gray-500 mb-2">Supported formats: JPG, PNG, GIF (max 2MB)</p>
+              <p className="text-xs text-gray-500">Supported formats: JPG, PNG, GIF (max 2MB)</p>
               
               <input
                 type="text"
@@ -257,100 +280,91 @@ const ProfileForm = ({
                 value={formData.image}
                 onChange={handleChange}
                 placeholder="Or enter image URL manually"
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
           </div>
         </div>
         
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description*</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Description*</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             placeholder="Tell people about yourself..."
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             rows={4}
             required
           />
         </div>
         
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-medium text-white">Wallet Addresses*</label>
-            {!isConnected && (
+        <div className="mb-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block text-lg font-medium text-gray-800">Wallet Addresses</label>
+            {!isConnected ? (
               <button 
                 type="button"
                 onClick={connectWallet}
-                className="text-sm bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
               >
-                Connect Wallet
+                Connect Wallet <MoveRight size={16} />
               </button>
-            )}
-            {isConnected && account && (
-              <div className="text-sm text-green-600 flex items-center">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+            ) : (
+              <div className="text-sm bg-green-100 text-green-700 py-1 px-3 rounded-full flex items-center">
+                <Check size={16} className="mr-1" />
                 Connected: {account.slice(0, 6)}...{account.slice(-4)}
               </div>
             )}
           </div>
           
-          {formData.walletAddresses.map((wallet, index) => (
-            <div key={index} className="flex gap-2 mb-2">
-              <select
-                value={wallet.network}
-                onChange={(e) => handleWalletChange(index, 'network', e.target.value)}
-                className="p-2 border rounded-md w-1/3 focus:ring-2 focus:ring-blue-500 text-white focus:border-blue-500"
-              >
-                <option value="Ethereum">Ethereum</option>
-                <option value="Sepolia">Sepolia</option>
-                <option value="Localhost">Localhost</option>
-              </select>
-              <input
-                type="text"
-                value={wallet.address}
-                onChange={(e) => handleWalletChange(index, 'address', e.target.value)}
-                placeholder="0x..."
-                className="p-2 border text-white rounded-md flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-              />
-              <button 
-                type="button" 
-                onClick={() => autoFillWalletAddress(index)}
-                className="p-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-md transition-colors"
-                title="Use connected wallet address"
-                disabled={!isConnected}
-              >
-                Auto
-              </button>
-              <button 
-                type="button" 
-                onClick={() => removeWallet(index)}
-                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                disabled={formData.walletAddresses.length <= 1}
-                title="Remove wallet address"
-              >
-                ✕
-              </button>
+          {!isConnected && (
+            <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-4 flex items-start gap-2">
+              <AlertCircle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-700">
+                You must connect your wallet to continue. Your wallet address will be automatically used for all networks.
+              </p>
             </div>
-          ))}
+          )}
           
-          <button 
-            type="button" 
-            onClick={addWallet}
-            className="text-sm text-blue-600 hover:text-blue-800 mt-1 transition-colors"
-          >
-            + Add Another Wallet
-          </button>  
+          {isConnected && (
+            <div className="space-y-3">
+              {formData.walletAddresses.map((wallet, index) => (
+                <div key={index} className="bg-white p-3 rounded-md border border-gray-200 flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-blue-100 text-blue-700 py-1 px-2 rounded text-sm font-medium">
+                      {wallet.network}
+                    </div>
+                    <div className="font-mono text-sm text-gray-700">
+                      {wallet.address.slice(0, 8)}...{wallet.address.slice(-6)}
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => copyToClipboard(wallet.address)}
+                    className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    title="Copy address"
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+              ))}
+              
+              <p className="text-sm text-gray-500 italic mt-2">
+                Your connected wallet address is automatically used for all networks.
+              </p>
+            </div>
+          )}
         </div>
         
-        <div className="mt-6">
+        <div className="pt-4">
           <button 
             type="submit" 
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            disabled={isLoading || isUploading}
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-medium text-lg"
+            disabled={isLoading || isUploading || !isConnected}
           >
             {isLoading ? 'Saving...' : initialData ? 'Update Profile' : 'Create Profile'}
+            {!isLoading && <MoveRight size={20} />}
           </button>
         </div>
       </form>

@@ -35,6 +35,23 @@ export async function POST(request) {
       );
     }
     
+    // Standardize Ethereum addresses (make them all lowercase)
+    data.walletAddresses = data.walletAddresses.map(wallet => ({
+      ...wallet,
+      address: wallet.address.toLowerCase()
+    }));
+    
+    // Remove duplicate addresses
+    const uniqueAddresses = new Map();
+    data.walletAddresses = data.walletAddresses.filter(wallet => {
+      const key = `${wallet.network}-${wallet.address}`;
+      if (uniqueAddresses.has(key)) {
+        return false;
+      }
+      uniqueAddresses.set(key, true);
+      return true;
+    });
+    
     const profile = await createScratchCard(data);
     return NextResponse.json(profile, { status: 201 });
   } catch (error) {
