@@ -17,7 +17,7 @@ const ProfileWizard = ({
     username: initialData?.username || '',
     email: initialData?.email || '',
     name: initialData?.name || initialData?.username || '',
-    image: initialData?.image || '/user.png',
+    image: initialData?.image || '/user.svg',
     description: initialData?.description || '',
     walletAddresses: initialData?.walletAddresses || []
   });
