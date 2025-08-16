@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Copy, AlertCircle, User, Camera, FileText, CheckCircle, CircleQuestionMark } from 'lucide-react';
 import Button from './ui/Button';
 import Profile1 from './placeholder/Profile1';
+import { Web3Context } from '@/context/Provider';
 
-const ProfileWizard = ({ 
-  initialData, 
+const ProfileWizard = ({
+  initialData,
   onSubmit,
-  isLoading = false 
+  isLoading = false
 }) => {
-  // Mock Web3 context for demo - replace with your actual context
-  const [mockWeb3State] = useState({
-    account: '0x1234567890123456789012345678901234567890',
-    isConnected: true
-  });
 
-  const { account, isConnected } = mockWeb3State;
-  
+
+  const { isConnected, account } = useContext(Web3Context)
+
+
+
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     username: initialData?.username || '',
@@ -40,7 +40,7 @@ const ProfileWizard = ({
     if (account && isConnected) {
       setFormData(prev => {
         let updatedWallets = [...prev.walletAddresses];
-        
+
         if (updatedWallets.length === 0) {
           updatedWallets = [
             { network: 'Ethereum', address: account },
@@ -53,7 +53,7 @@ const ProfileWizard = ({
             address: account
           }));
         }
-        
+
         return {
           ...prev,
           walletAddresses: updatedWallets
@@ -72,7 +72,7 @@ const ProfileWizard = ({
 
   const validateStep = (step) => {
     setError('');
-    
+
     switch (step) {
       case 1:
         if (!formData.username.trim()) {
@@ -113,7 +113,7 @@ const ProfileWizard = ({
 
   const handleSubmit = async () => {
     if (!validateStep(1)) return;
-    
+
     const standardizedFormData = {
       ...formData,
       walletAddresses: formData.walletAddresses.map(wallet => ({
@@ -121,7 +121,7 @@ const ProfileWizard = ({
         address: wallet.address.toLowerCase()
       }))
     };
-    
+
     try {
       await onSubmit(standardizedFormData);
     } catch (err) {
@@ -164,69 +164,56 @@ const ProfileWizard = ({
       case 1:
         return (
           <div className="text-center min-h-screen flex flex-col justify-between items-center w-full h-full">
-           <div className=""></div>
+            <div className=""></div>
             <div className="flex  flex-col max-w-xl justify-center items-start p-2 gap-1 h-full w-full">
               <div className="text-black font-medium text-xl">pick a username{""}</div>
-            <div className=" gap-3 flex w-full">
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="your-unique-username"
-                className="w-full p-4 border-2 border-black placeholder:text-black/50 rounded-lg focus:ring-2 focus:ring-black focus:bg-[#2e2e2e]/5 focus:border-black transition-colors text-xl text-left font-medium"
+              <div className=" gap-3 flex w-full">
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="your-unique-username"
+                  className="w-full p-4 border-2 border-black placeholder:text-black/50 rounded-lg focus:ring-2 focus:ring-black focus:bg-[#2e2e2e]/5 focus:border-black transition-colors text-xl text-left font-medium"
 
-                disabled={!!initialData}
-                required
-              />
-              <div className="flex justify-center rounded-lg items-center w-20 h-20 aspect-square bg-black">
-              <CircleQuestionMark color="white"/>
-</div>
+                  disabled={!!initialData}
+                  required
+                />
+                <div className="flex justify-center rounded-lg items-center w-20 h-20 aspect-square bg-black">
+                  <CircleQuestionMark color="white" />
+                </div>
               </div>
-           
-            </div>
-            <div className="flex w-full border-t p-4 border-black justify-end">
 
-            
-            <button
-              type="button"
-              onClick={nextStep}
-              disabled={!formData.username.trim()}
-              className=""
-            >
-          
-              <Button text="next" color="black" textColor="white" />
-            </button>
+            </div>
+            <div className="flex w-full border-t border-black justify-end">
+
+
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!formData.username.trim()}
+                className=""
+              >
+
+                <Button text="next" color="black" textColor="white" />
+              </button>
             </div>
           </div>
         );
 
       case 2:
         return (
-          <div className="w-full p-10 h-full flex flex-col justify-between items-center">
-<div className="w-[40vw]">
-            <Profile1 />
-</div>
-            <div>
-              <h2 className="text-3xl font-bold mb-4 text-gray-800">Add Profile Picture</h2>
-              <p className="text-gray-600 text-lg mb-8">
-                Upload an image or provide a URL (optional)
-              </p>
+          <div className="w-full min-h-screen h-full flex flex-col justify-between items-center">
+            <div className=""></div>
+            <div className="w-[90vw] md:w-[40vw]">
+              <Profile1 Name={formData.username} image={formData.image} address={account} />
+
             </div>
-            
+
+
             <div className="max-w-md mx-auto">
-              <div className="mb-8">
-                <img 
-                  src={formData.image} 
-                  alt="Profile Preview" 
-                  className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mx-auto"
-                  onError={(e) => {
-                    const target = e.target;
-                    target.src = 'https://via.placeholder.com/150';
-                  }}
-                />
-              </div>
-              
+
+
               <div className="space-y-4">
                 <div>
                   <input
@@ -244,9 +231,9 @@ const ProfileWizard = ({
                     {isUploading ? 'Uploading...' : 'Upload Image'}
                   </label>
                 </div>
-                
+
                 <p className="text-xs text-gray-500">JPG, PNG, GIF (max 2MB)</p>
-                
+
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300" />
@@ -255,24 +242,21 @@ const ProfileWizard = ({
                     <span className="px-2 bg-white text-gray-500">or</span>
                   </div>
                 </div>
-             
+
               </div>
             </div>
-            
-            <div className="flex gap-4 justify-center">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-              >
-                Back
-              </button>
+
+            <div className="flex w-full border-t p-4 border-black justify-end">
+
+
               <button
                 type="button"
                 onClick={nextStep}
-                className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                disabled={!formData.username.trim()}
+                className=""
               >
-                Continue
+
+                <Button text="next" color="black" textColor="white" />
               </button>
             </div>
           </div>
@@ -290,19 +274,19 @@ const ProfileWizard = ({
                 Check everything looks good before creating your profile
               </p>
             </div>
-            
+
             <div className="max-w-md mx-auto bg-gray-50 rounded-2xl p-8 space-y-6">
               {/* Profile Preview */}
               <div className="text-center">
-                <img 
-                  src={formData.image} 
-                  alt="Profile" 
+                <img
+                  src={formData.image}
+                  alt="Profile"
                   className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
                 />
                 <h3 className="text-xl font-bold text-gray-800">{formData.name || formData.username}</h3>
                 <p className="text-blue-600 font-medium">@{formData.username}</p>
               </div>
-              
+
               <div className="border-t pt-4">
                 <h4 className="font-medium text-gray-700 mb-3">Connected Wallets</h4>
                 <div className="space-y-2">
@@ -316,8 +300,8 @@ const ProfileWizard = ({
                           {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
                         </span>
                       </div>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={() => copyToClipboard(wallet.address)}
                         className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                       >
@@ -328,7 +312,7 @@ const ProfileWizard = ({
                 </div>
               </div>
             </div>
-            
+
             <div className="flex gap-4 justify-center">
               <button
                 type="button"
@@ -356,7 +340,7 @@ const ProfileWizard = ({
 
   return (
     <div className="w-full min-h-screen h-full flex flex-col justify-center items-center">
-      
+
 
       <div className=" h-full w-full flex flex-col justify-center">
         {renderStepContent()}

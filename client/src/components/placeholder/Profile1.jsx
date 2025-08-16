@@ -1,32 +1,37 @@
 import Image from 'next/image'
 import React from 'react'
 
-const Profile1 = ({Name , address , image}) => {
+const Profile1 = ({ Name, address, image }) => {
 
     return (
         <div className='w-full bg-black p-[5vw] relative h-full'>
 
-            <div className="w-fit h-full relative"> 
+            <div className="w-fit h-full relative">
                 <Image
-                src={'/profile/card.svg'}
-                width={200}
-                height={200}
-                className='w-full h-full'
-                alt='profile-bg-card'
-            />
-            
+                    src={'/profile/card.svg'}
+                    width={200}
+                    height={200}
+                    className='w-full h-full'
+                    alt='profile-bg-card'
+                />
+
 
                 <Image
-                src={image}
-                width={200}
-                height={200}
-                className='w-40 absolute border-4 border-white rounded-full aspect-square top-[9%] left-[5%] h-auto'
-                alt='profile-bg-card '
-            />
+                    src={image}
+                    width={200}
+                    height={200}
+                    style={{
+                        width: "clamp(6.25rem,9vw,200rem)",
+                        border: "clamp(0.5px,0.25vw,200px) solid white"
+
+                    }}
+                    className='w-40 absolute border-4 border-white rounded-full aspect-square top-[9%] left-[5%] h-auto'
+                    alt='profile-bg-card '
+                />
 
                 <div className="text-white  absolute top-[5%] left-[39%]"
                     style={{
-                        fontSize: "clamp(1rem,2.5vw,200rem)"
+                        fontSize: "clamp(1.5rem,2.5vw,200rem)"
                     }}
                 >{Name}</div>
 
@@ -35,7 +40,7 @@ const Profile1 = ({Name , address , image}) => {
                         fontSize: "clamp(1rem,2vw,200rem)"
                     }}
                 >
-                    {address.slice(0, 7) + "..."}
+                    {`${address}`.slice(0, 7) + "..."}
                 </div>
             </div>
         </div>
