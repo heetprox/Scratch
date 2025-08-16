@@ -50,7 +50,7 @@ const Profile1 = ({ Name, address, image }) => {
 
                 <div className="text-white  absolute top-[5%] left-[39%]"
                     style={{
-                        fontSize: "clamp(1.5rem,2.5vw,200rem)"
+                        fontSize: "clamp(1.5rem,2.75vw,200rem)"
                     }}
                 >{Name}</div>
 
