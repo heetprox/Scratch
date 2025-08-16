@@ -3,6 +3,31 @@ import { Copy, AlertCircle, User, Camera, FileText, CheckCircle, CircleQuestionM
 import Button from './ui/Button';
 import Profile1 from './placeholder/Profile1';
 import { Web3Context } from '@/context/Provider';
+import Image from 'next/image';
+
+const socials =[
+  {
+    title: 'Twitter',
+    icon: '/icons/ixx.svg',
+  },
+  {
+    title: 'Instagram',
+    icon: '/icons/iinsta.svg',
+  },
+  {
+    title: 'Spotify',
+    icon: '/icons/ispotify.svg',
+  },
+  {
+    title: 'TikTok',
+    icon: '/icons/itik.svg',
+
+  },
+  {
+    title: 'Github',
+    icon: '/icons/igit.svg',
+  }
+]
 
 const ProfileWizard = ({
   initialData,
@@ -327,40 +352,46 @@ const ProfileWizard = ({
       case 4:
         return (
           <div className="text-center space-y-8">
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle size={48} className="text-green-600" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-4 text-gray-800">Review Your Profile</h2>
-              <p className="text-gray-600 text-lg mb-8">
-                Check everything looks good before creating your profile
-              </p>
-            </div>
+            <div className="text-4xl font-bold text-black">you are all set</div>
 
-            <div className="max-w-md mx-auto bg-gray-50 rounded-2xl p-8 space-y-6">
-              {/* Profile Preview */}
-              <div className="text-center">
-                <img
+            <div className="max-w-md mx-auto bg-white shadow-xl border border-black rounded-4xl overflow-hidden  space-y-6">
+              <div className="text-center flex w-full justify-center flex-col items-center">
+                <div className="flex gap-2 w-full justify-start p-1 h-fit bg-black border-2 border-black ">
+                <Image
+                  width={200}
+                  height={200}
+
                   src={formData.image}
                   alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-md"
+                  className="w-20 h-20 rounded-full object-cover border-4 bg-black border-white p-1 shadow-md"
                 />
-                <h3 className="text-xl font-bold text-gray-800">{formData.name || formData.username}</h3>
-                <p className="text-blue-600 font-medium">@{formData.username}</p>
-                <p className="text-gray-600 text-sm mt-1">{formData.email}</p>
+                <div className="flex flex-col items-start justify-start gap-0">
+                <h3 className="text-4xl  text-white">{formData.name || formData.username}</h3>
+                <h3 className="text-2xl  text-white">{`${account}`.slice(0, 6) + '...' + `${account}`.slice(-4)}</h3>
+
+                </div>
+
+
+                </div>
               </div>
 
+              <div className='text-left w-full px-4 ber capitalize text-xl'>connect other platforms</div>
+
+
               <div className="border-t pt-4">
-                <h4 className="font-medium text-gray-700 mb-3">Connected Wallets</h4>
                 <div className="space-y-2">
-                  {formData.walletAddresses.map((wallet, index) => (
+                  {socials.map((item,index) => (
                     <div key={index} className="bg-white p-3 rounded-lg border border-gray-200 flex justify-between items-center">
                       <div className="flex items-center gap-2">
-                        <span className="bg-blue-100 text-blue-700 py-1 px-2 rounded text-xs font-medium">
-                          {wallet.network}
-                        </span>
+                       <Image
+                        width={200}
+                        height={200}
+                        src={item.icon}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover border-4 bg-black border-white p-1 shadow-md"
+                      />
                         <span className="font-mono text-sm text-gray-700">
-                          {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
+                          {item.title}
                         </span>
                       </div>
                       <button
