@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Copy, AlertCircle, User, Camera, FileText, CheckCircle, CircleQuestionMark } from 'lucide-react';
+import { Copy, AlertCircle, User, Camera, FileText, CheckCircle, CircleQuestionMark, Mail } from 'lucide-react';
 import Button from './ui/Button';
 import Profile1 from './placeholder/Profile1';
 import { Web3Context } from '@/context/Provider';
@@ -10,15 +10,12 @@ const ProfileWizard = ({
   isLoading = false
 }) => {
 
-
   const { isConnected, account } = useContext(Web3Context)
-
-
-
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     username: initialData?.username || '',
+    email: initialData?.email || '',
     name: initialData?.name || initialData?.username || '',
     image: initialData?.image || '/user.png',
     description: initialData?.description || '',
@@ -32,7 +29,8 @@ const ProfileWizard = ({
   const steps = [
     { id: 1, title: 'Set Username', icon: User },
     { id: 2, title: 'Profile Image', icon: Camera },
-    { id: 3, title: 'Review & Create', icon: CheckCircle }
+    { id: 3, title: 'Email Address', icon: Mail },
+    { id: 4, title: 'Review & Create', icon: CheckCircle }
   ];
 
   // Update wallet address when account changes
@@ -70,6 +68,20 @@ const ProfileWizard = ({
     }));
   }, [formData.username]);
 
+  // Cleanup object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      if (formData.image && formData.image.startsWith('blob:')) {
+        URL.revokeObjectURL(formData.image);
+      }
+    };
+  }, [formData.image]);
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validateStep = (step) => {
     setError('');
 
@@ -83,6 +95,16 @@ const ProfileWizard = ({
       case 2:
         // Image is optional, always valid
         break;
+      case 3:
+        if (!formData.email.trim()) {
+          setError('Email address is required');
+          return false;
+        }
+        if (!validateEmail(formData.email)) {
+          setError('Please enter a valid email address');
+          return false;
+        }
+        break;
       default:
         return true;
     }
@@ -94,6 +116,13 @@ const ProfileWizard = ({
       if (currentStep < steps.length) {
         setCurrentStep(currentStep + 1);
       }
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      setError('');
     }
   };
 
@@ -112,7 +141,7 @@ const ProfileWizard = ({
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(1)) return;
+    if (!validateStep(1) || !validateStep(3)) return;
 
     const standardizedFormData = {
       ...formData,
@@ -130,7 +159,6 @@ const ProfileWizard = ({
     }
   };
 
-  // Mock image upload for demo
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -148,15 +176,19 @@ const ProfileWizard = ({
     setIsUploading(true);
     setError('');
 
-    // Mock upload delay
-    setTimeout(() => {
-      const mockUrl = `https://via.placeholder.com/150?text=${file.name.slice(0, 3)}`;
+    try {
+      const imageUrl = URL.createObjectURL(file);
+      
       setFormData(prev => ({
         ...prev,
-        image: mockUrl
+        image: imageUrl
       }));
+      
       setIsUploading(false);
-    }, 1500);
+    } catch (err) {
+      setError('Failed to upload image');
+      setIsUploading(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -165,36 +197,37 @@ const ProfileWizard = ({
         return (
           <div className="text-center min-h-screen flex flex-col justify-between items-center w-full h-full">
             <div className=""></div>
-            <div className="flex  flex-col max-w-xl justify-center items-start p-2 gap-1 h-full w-full">
-              <div className="text-black font-medium text-xl">pick a username{""}</div>
-              <div className=" gap-3 flex w-full">
+            <div className="flex flex-col max-w-xl justify-center items-start p-2 gap-1 h-full w-full">
+              <div className="text-black font-medium text-xl">pick a username</div>
+              <div className="gap-3 flex w-full">
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="your-unique-username"
-                  className="w-full p-4 border-2 border-black placeholder:text-black/50 rounded-lg focus:ring-2 focus:ring-black focus:bg-[#2e2e2e]/5 focus:border-black transition-colors text-xl text-left font-medium"
-
+                  placeholder="username"
+                  className="w-full p-2 px-4 border-2 border-black placeholder:text-black/50 rounded-lg focus:ring-2 focus:ring-black focus:bg-[#2e2e2e]/5 focus:border-black transition-colors text-2xl ber text-left"
                   disabled={!!initialData}
                   required
                 />
-                <div className="flex justify-center rounded-lg items-center w-20 h-20 aspect-square bg-black">
-                  <CircleQuestionMark color="white" />
+                <div className="flex cursor-pointer justify-center rounded-lg items-center w-20 h-20 aspect-square bg-black">
+                  <User color="white" />
                 </div>
               </div>
-
+              {error && (
+                <div className="text-red-500 text-sm mt-2 flex items-center gap-2">
+                  <AlertCircle size={16} />
+                  {error}
+                </div>
+              )}
             </div>
-            <div className="flex w-full border-t border-black justify-end">
-
-
+            <div className="flex w-full border-t p-4 border-black justify-end">
               <button
                 type="button"
                 onClick={nextStep}
                 disabled={!formData.username.trim()}
                 className=""
               >
-
                 <Button text="next" color="black" textColor="white" />
               </button>
             </div>
@@ -207,13 +240,9 @@ const ProfileWizard = ({
             <div className=""></div>
             <div className="w-[90vw] md:w-[40vw]">
               <Profile1 Name={formData.username} image={formData.image} address={account} />
-
             </div>
 
-
             <div className="max-w-md mx-auto">
-
-
               <div className="space-y-4">
                 <div>
                   <input
@@ -221,41 +250,33 @@ const ProfileWizard = ({
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="hidden"
-                    id="image-upload"
+                    id="image-upload" 
                     disabled={isUploading}
                   />
                   <label
                     htmlFor="image-upload"
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-400 font-medium"
+                    className="text-white bg-black w-fit py-5 cursor-pointer px-8 translate-y-6 rounded-lg transition-colors font-medium text-lg"
                   >
                     {isUploading ? 'Uploading...' : 'Upload Image'}
                   </label>
                 </div>
-
-                <p className="text-xs text-gray-500">JPG, PNG, GIF (max 2MB)</p>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">or</span>
-                  </div>
-                </div>
-
               </div>
+              {error && (
+                <div className="text-red-500 text-sm mt-4 flex items-center gap-2">
+                  <AlertCircle size={16} />
+                  {error}
+                </div>
+              )}
             </div>
+            <div className=""></div>
 
             <div className="flex w-full border-t p-4 border-black justify-end">
-
-
+             
               <button
                 type="button"
                 onClick={nextStep}
-                disabled={!formData.username.trim()}
                 className=""
               >
-
                 <Button text="next" color="black" textColor="white" />
               </button>
             </div>
@@ -263,6 +284,47 @@ const ProfileWizard = ({
         );
 
       case 3:
+        return (
+          <div className="text-center min-h-screen flex flex-col justify-between items-center w-full h-full">
+            <div className=""></div>
+            <div className="flex flex-col max-w-xl justify-center items-start p-2 gap-1 h-full w-full">
+              <div className="text-black font-medium text-xl">enter your email</div>
+              <div className="gap-3 flex w-full">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  className="w-full p-4 border-2 border-black placeholder:text-black/50 rounded-lg focus:ring-2 focus:ring-black focus:bg-[#2e2e2e]/5 focus:border-black transition-colors text-xl ber text-left "
+                  required
+                />
+                <div className="flex justify-center rounded-lg items-center w-20 h-20 aspect-square bg-black">
+                  <Mail color="white" />
+                </div>
+              </div>
+              {error && (
+                <div className="text-red-500 text-sm mt-2 flex items-center gap-2">
+                  <AlertCircle size={16} />
+                  {error}
+                </div>
+              )}
+            </div>
+            <div className="flex w-full border-t p-4 border-black justify-end">
+              
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!formData.email.trim() || !validateEmail(formData.email)}
+                className=""
+              >
+                <Button text="next" color="black" textColor="white" />
+              </button>
+            </div>
+          </div>
+        );
+
+      case 4:
         return (
           <div className="text-center space-y-8">
             <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -285,6 +347,7 @@ const ProfileWizard = ({
                 />
                 <h3 className="text-xl font-bold text-gray-800">{formData.name || formData.username}</h3>
                 <p className="text-blue-600 font-medium">@{formData.username}</p>
+                <p className="text-gray-600 text-sm mt-1">{formData.email}</p>
               </div>
 
               <div className="border-t pt-4">
@@ -314,13 +377,7 @@ const ProfileWizard = ({
             </div>
 
             <div className="flex gap-4 justify-center">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(2)}
-                className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-              >
-                Back
-              </button>
+            
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -340,9 +397,7 @@ const ProfileWizard = ({
 
   return (
     <div className="w-full min-h-screen h-full flex flex-col justify-center items-center">
-
-
-      <div className=" h-full w-full flex flex-col justify-center">
+      <div className="h-full w-full flex flex-col justify-center">
         {renderStepContent()}
       </div>
     </div>

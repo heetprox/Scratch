@@ -30,6 +30,7 @@ model Payment {
   amount          Decimal     @db.Decimal(18, 8) 
   network         String
   address         String
+  email           String
   done            Boolean     @default(false)
   transactionHash String?     @map("transaction_hash")
   timestamp       BigInt?   
