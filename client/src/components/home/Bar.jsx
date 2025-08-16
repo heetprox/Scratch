@@ -1,10 +1,12 @@
-import { CircleUser, CircleUserRound, Search, Settings, SquarePlus, Telescope } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import User from '../icons/User'
 import Setting from '../icons/Setting'
 import Cube from '../icons/Cube'
 import Plus from '../icons/Plus'
+import Search from '../icons/Search'
+import Notification from '../icons/Notification'
+import Hover from '../placeholder/Hover'
 
 const Bar = () => {
     return (
@@ -16,11 +18,11 @@ const Bar = () => {
             >
                 <div className="w-full">
                     <Image
-                        src={"/logo.svg"}
+                        src={"/logow.svg"}
                         width={100}
                         height={100}
                         alt='logo'
-                        className='w-full border-2 p-1  border-white h-auto aspect-square invert'
+                        className='w-full border-2 opacity-50 rounded-sm  border-white h-auto aspect-square invert'
 
                     />
                 </div>
@@ -28,20 +30,14 @@ const Bar = () => {
 
                 <div className="w-full flex flex-col gap-6">
                     <Plus />
+                    <Hover text='search'>
 
-
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-auto aspect-square">
-                        <path strokeLinecap="round" color='rgb(0, 0, 0, 0.4)' strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
+                        <Search />
+                    </Hover>
 
                     <Cube />
 
-
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-auto aspect-square">
-                        <path strokeLinecap="round" color='rgb(0, 0, 0, 0.4)' strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                    </svg>
-
-
+                    <Notification />
                 </div>
 
                 <div className="w-full flex flex-col gap-6">
