@@ -18,9 +18,11 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
+      await console.log(data);
     
     // Validate required fields
-    if (!data.username || !data.name || !data.description || !data.walletAddresses || data.walletAddresses.length === 0) {
+    if (!data.username || !data.name || !data.email || !data.walletAddresses || data.walletAddresses.length === 0) {
+      
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

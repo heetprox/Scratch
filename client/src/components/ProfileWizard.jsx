@@ -50,6 +50,8 @@ const ProfileWizard = ({
   const [error, setError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null); // Store the actual file for upload
+  const [previewImage, setPreviewImage] = useState(formData.image); // Store preview URL
 
   const steps = [
     { id: 1, title: 'Set Username', icon: User },
@@ -96,11 +98,11 @@ const ProfileWizard = ({
   // Cleanup object URLs when component unmounts
   useEffect(() => {
     return () => {
-      if (formData.image && formData.image.startsWith('blob:')) {
-        URL.revokeObjectURL(formData.image);
+      if (previewImage && previewImage.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage);
       }
     };
-  }, [formData.image]);
+  }, [previewImage]);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -165,22 +167,60 @@ const ProfileWizard = ({
     setTimeout(() => setCopiedAddress(''), 2000);
   };
 
+  // Function to upload image to Cloudinary
+  const uploadImageToCloudinary = async (file) => {
+    if (!file) return null;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(3)) return;
 
-    const standardizedFormData = {
-      ...formData,
-      walletAddresses: formData.walletAddresses.map(wallet => ({
-        ...wallet,
-        address: wallet.address.toLowerCase()
-      }))
-    };
+    setIsUploading(true);
+    setError('');
 
     try {
+      let imageUrl = formData.image;
+
+      // Upload image if a new file was selected
+      if (selectedFile) {
+        imageUrl = await uploadImageToCloudinary(selectedFile);
+      }
+
+      const standardizedFormData = {
+        ...formData,
+        image: imageUrl,
+        walletAddresses: formData.walletAddresses.map(wallet => ({
+          ...wallet,
+          address: wallet.address.toLowerCase()
+        }))
+      };
+
       await onSubmit(standardizedFormData);
     } catch (err) {
       console.error('Profile submission error:', err);
       setError(err.message || 'Failed to save profile');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -198,21 +238,27 @@ const ProfileWizard = ({
       return;
     }
 
-    setIsUploading(true);
     setError('');
 
     try {
+      // Clean up previous preview URL
+      if (previewImage && previewImage.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage);
+      }
+
+      // Create preview URL and store file for later upload
       const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      setSelectedFile(file);
       
+      // Update formData for immediate UI feedback
       setFormData(prev => ({
         ...prev,
         image: imageUrl
       }));
       
-      setIsUploading(false);
     } catch (err) {
-      setError('Failed to upload image');
-      setIsUploading(false);
+      setError('Failed to process image');
     }
   };
 
@@ -264,7 +310,7 @@ const ProfileWizard = ({
           <div className="w-full min-h-screen h-full flex flex-col justify-between items-center">
             <div className=""></div>
             <div className="w-[90vw] md:w-[40vw]">
-              <Profile1 Name={formData.username} image={formData.image} address={account} />
+              <Profile1 Name={formData.username} image={previewImage} address={account} />
             </div>
 
             <div className="max-w-md mx-auto">
@@ -282,7 +328,7 @@ const ProfileWizard = ({
                     htmlFor="image-upload"
                     className="text-white bg-black w-fit py-5 cursor-pointer px-8 translate-y-6 rounded-lg transition-colors font-medium text-lg"
                   >
-                    {isUploading ? 'Uploading...' : 'Upload Image'}
+                    {selectedFile ? 'Change Image' : 'Upload Image'}
                   </label>
                 </div>
               </div>
@@ -296,7 +342,6 @@ const ProfileWizard = ({
             <div className=""></div>
 
             <div className="flex w-full border-t p-4 border-black justify-end">
-             
               <button
                 type="button"
                 onClick={nextStep}
@@ -336,7 +381,6 @@ const ProfileWizard = ({
               )}
             </div>
             <div className="flex w-full border-t p-4 border-black justify-end">
-              
               <button
                 type="button"
                 onClick={nextStep}
@@ -354,29 +398,24 @@ const ProfileWizard = ({
           <div className="text-center space-y-8">
             <div className="text-4xl font-bold text-black">you are all set</div>
 
-            <div className="max-w-md mx-auto bg-white shadow-xl border border-black rounded-4xl overflow-hidden  space-y-6">
+            <div className="max-w-md mx-auto bg-white shadow-xl border border-black rounded-4xl overflow-hidden space-y-6">
               <div className="text-center flex w-full justify-center flex-col items-center">
                 <div className="flex gap-2 w-full justify-start p-1 h-fit bg-black border-2 border-black ">
                 <Image
                   width={200}
                   height={200}
-
-                  src={formData.image}
+                  src={previewImage}
                   alt="Profile"
                   className="w-20 h-20 rounded-full object-cover border-4 bg-black border-white p-1 shadow-md"
                 />
                 <div className="flex flex-col items-start justify-start gap-0">
-                <h3 className="text-4xl  text-white">{formData.name || formData.username}</h3>
-                <h3 className="text-2xl  text-white">{`${account}`.slice(0, 6) + '...' + `${account}`.slice(-4)}</h3>
-
+                <h3 className="text-4xl text-white">{formData.name || formData.username}</h3>
+                <h3 className="text-2xl text-white">{`${account}`.slice(0, 6) + '...' + `${account}`.slice(-4)}</h3>
                 </div>
-
-
                 </div>
               </div>
 
               <div className='text-left w-full px-4 ber capitalize text-xl'>connect other platforms</div>
-
 
               <div className="border-t pt-4">
                 <div className="space-y-2">
@@ -396,7 +435,7 @@ const ProfileWizard = ({
                       </div>
                       <button
                         type="button"
-                        onClick={() => copyToClipboard(wallet.address)}
+                        onClick={() => copyToClipboard(item.title)}
                         className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                       >
                         <Copy size={14} />
@@ -408,16 +447,22 @@ const ProfileWizard = ({
             </div>
 
             <div className="flex gap-4 justify-center">
-            
               <button
                 type="button"
                 onClick={handleSubmit}
                 className="bg-green-600 text-white py-3 px-8 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-                disabled={isLoading}
+                disabled={isLoading || isUploading}
               >
-                {isLoading ? 'Creating Profile...' : 'Create Profile'}
+                {isUploading ? 'Uploading Image...' : isLoading ? 'Creating Profile...' : 'Create Profile'}
               </button>
             </div>
+
+            {error && (
+              <div className="text-red-500 text-sm mt-4 flex items-center gap-2 justify-center">
+                <AlertCircle size={16} />
+                {error}
+              </div>
+            )}
           </div>
         );
 

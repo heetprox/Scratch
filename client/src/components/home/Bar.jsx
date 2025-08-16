@@ -13,7 +13,7 @@ import React, { useState, useEffect } from 'react'
 const Bar = () => {
 
     return (
-        <div className='max-h-screen min-h-screen h-full w-14 fixed z-[999] left-0 top-0 bottom-0 border-r border-black/15'>
+        <div className='max-h-screen bg-white min-h-screen h-full w-14 fixed  z-[999] left-0 top-0 bottom-0 border-r border-black/15'>
             <div className="flex w-full h-full flex-col justify-between items-center"
                 style={{
                     padding: "clamp(0.85rem, 0.75vw, 100rem)"
