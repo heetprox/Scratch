@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "Bergurau-Regular";
-  src: url("/fonts/Bergurau-Regular.otf") format("opentype");
+  font-family: "SuisseIntl-Regular";
+  src: url("/fonts/SuisseIntl-Regular.ttf") format("truetype");
 }
 @font-face {
   font-family: "navigator-hand";
@@ -30,6 +30,10 @@
 }
 .f1 {
   font-family: "OldschoolGrotesk-NormalExtraBold", sans-serif;
+}
+
+.ss-font {
+  font-family: "SuisseIntl-Regular", sans-serif;
 }
 .pro {
   font-family: "BADABB", sans-serif;

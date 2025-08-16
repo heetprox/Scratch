@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import ProfileForm from '../../components/ProfileForm';
 import { Web3Context } from '../../context/Provider';
 import { AlertCircle } from 'lucide-react';
+import ProfileWizard from '@/components/ProfileWizard';
 
 const CreateProfilePage = () => {
   const router = useRouter();
@@ -123,7 +124,7 @@ const CreateProfilePage = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 py-12">
+    <div className="bg-white w-full h-full min-h-screen max-h-screen mx-auto ">
       {error && (
         <div className="mb-8 p-4 bg-red-50 text-red-700 rounded-lg border border-red-100 flex items-start gap-2 max-w-2xl mx-auto">
           <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
@@ -131,7 +132,7 @@ const CreateProfilePage = () => {
         </div>
       )}
       
-      <ProfileForm onSubmit={handleSubmit} isLoading={isLoading} />
+      <ProfileWizard onSubmit={handleSubmit} isLoading={isLoading} />
     </div>
   );
 };

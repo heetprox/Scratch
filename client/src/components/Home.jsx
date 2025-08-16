@@ -28,7 +28,7 @@ const Home = () => {
   };
 
   return (
-    <div className='bg-[#F58300] w-full h-full'>
+    <div className=' w-full h-full'>
       <div className="w-full h-full flex flex-col justify-between items-center">
         <div className="h-[10vh]"></div>
         <div className="flex flex-col gap-5">
@@ -39,14 +39,14 @@ const Home = () => {
                 fontSize: "clamp(3rem, 6vw, 100rem)",
                 lineHeight: "clamp(3rem, 7vw, 10rem)",
               }}
-              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every Tap Tells A
+              className='pro  z-50 relative text-[#F7ED35] text-center uppercase'>Every STORY HAS A
             </h1>
             <h1
               style={{
                 fontSize: "clamp(3rem, 6vw, 100rem)",
                 lineHeight: "clamp(3rem, 7vw, 10rem)",
               }}
-              className='pro absolute inset-0  translate-1.5 md:translate-2  text-[#000000] text-center z-10 uppercase'>Every Tap Tells A
+              className='pro absolute inset-0  translate-1.5 md:translate-2  text-[#000000] text-center z-10 uppercase'>Every STORY HAS A
             </h1>
           </div>
 

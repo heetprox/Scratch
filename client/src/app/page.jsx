@@ -27,7 +27,7 @@ export default function HomePage({ profiles = [] }) {
   };
 
   return (
-    <div className="w-full bg-[#F58300] min-h-screen  h-full">
+    <div className="w-full bg-[#5420ff] min-h-screen  h-full">
       <Home />
       <Video />
 

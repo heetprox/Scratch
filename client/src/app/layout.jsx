@@ -16,7 +16,7 @@ export default function RootLayout({
     <ViewTransitions>
     <html lang="en">
       <body
-        className={`navigator-hand bg-[#F58300] min-h-screen antialiased`}
+        className={`navigator-hand bg-[#5420ff] min-h-screen w-full h-full antialiased`}
       >
         <Web3Provider>
           {/* <Navbar /> */}
