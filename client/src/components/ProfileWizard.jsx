@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Copy, AlertCircle, User, Camera, FileText, CheckCircle, CircleQuestionMark } from 'lucide-react';
 import Button from './ui/Button';
+import Profile1 from './placeholder/Profile1';
 
 const ProfileWizard = ({ 
   initialData, 
@@ -202,8 +203,10 @@ const ProfileWizard = ({
 
       case 2:
         return (
-          <div className="text-center space-y-8">
-           
+          <div className="w-full p-10 h-full flex flex-col justify-between items-center">
+<div className="w-[40vw]">
+            <Profile1 />
+</div>
             <div>
               <h2 className="text-3xl font-bold mb-4 text-gray-800">Add Profile Picture</h2>
               <p className="text-gray-600 text-lg mb-8">
@@ -252,15 +255,7 @@ const ProfileWizard = ({
                     <span className="px-2 bg-white text-gray-500">or</span>
                   </div>
                 </div>
-                
-                <input
-                  type="text"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="Enter image URL"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
+             
               </div>
             </div>
             
