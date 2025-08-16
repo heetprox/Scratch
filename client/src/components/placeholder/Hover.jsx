@@ -1,13 +1,39 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 
-const Hover = ({ children , text }) => {
+const Hover = ({ children, text }) => {
+    const [isHovered, setIsHovered] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
 
-  return (
-    <div className='w-full overflow-auto flex cursor-pointer h-auto relative'>
-        {children}
-        <p className='text-white absolute top-0 left-0 bg-black hidden hover:block text-xl '>{text}</p>
-    </div>
-  )
+    useEffect(() => {
+    let timeoutId
+    if (isHovered) {
+      timeoutId = setTimeout(() => {
+        setShowTooltip(true)
+      }, 300)
+    } else {
+      clearTimeout(timeoutId)
+      setShowTooltip(false)
+    }
+
+    // Cleanup function to clear timeout
+    return () => clearTimeout(timeoutId)
+  }, [isHovered])
+
+    return (
+        <div className="w-full cursor-pointer relative h-auto"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {children}
+
+            {showTooltip && (
+                  <div className="absolute  top-0 left-12 px-2 capitalize text-sm py-0.5 bg-black ber text-white whitespace-nowrap z-50">
+                    {text}
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default Hover

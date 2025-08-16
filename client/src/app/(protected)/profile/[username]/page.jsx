@@ -13,7 +13,6 @@ const Page = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Updated API route path
         const response = await fetch(`/api/profiles/${username}`);
         if (!response.ok) {
           notFound();
