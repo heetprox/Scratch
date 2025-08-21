@@ -9,14 +9,14 @@ function Layout({
   children,
 }) {
   return (
-      <div
-        className={`navigator-hand bg-[#fff] min-h-screen w-full h-full antialiased`}
-      >
-          <Bar />
-        <div className="w-full h-full pl-12">
+    <div
+      className={`navigator-hand bg-[#fff] min-h-screen w-full h-full antialiased`}
+    >
+      <Bar />
+      <div className="w-full h-full pl-12">
         {children}
-        </div>
       </div>
+    </div>
   );
 }
 export default Layout;

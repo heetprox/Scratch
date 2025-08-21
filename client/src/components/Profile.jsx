@@ -107,17 +107,11 @@ const Profile = ({ profile, isOwner = false }) => {
               />
 
               <div className="flex gap-2 items-center w-fit">
-                <div className="bg-white px-3 py-1 border borde-black text-black rounded-xl text-xl navigator-hand h-fit">
+                <div className="bg-black cursor-pointer px-3 py-1 border-2 borde-white text-white rounded-xl text-md uppercase  navigator-hand h-fit">
                 
                   <span>Follow</span></div>
 
-                <div className="bg-white px-3 py-1 border borde-black text-black rounded-xl text-xl navigator-hand h-fit">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-                  </svg>
-
-
-                </div>
+               
               </div>
             </div>
 
@@ -125,7 +119,7 @@ const Profile = ({ profile, isOwner = false }) => {
 
             <div className={`${Space_hanken.className} flex text-md font-semibold  text-black/60 -mt-1`}>{profile.username} • cursed</div>
 
-            <div className={`${Space_hanken.className} flex mt-2 font-semibold text-md  text-black`}>Look at things differently!</div>
+            <div className={`${Space_hanken.className} font-semibold flex mt-2 text-black/60 text-lg`}>Look at things differently!</div>
 
 
           </div>

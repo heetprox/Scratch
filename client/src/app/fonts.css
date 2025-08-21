@@ -25,8 +25,15 @@
   font-family: "NeueHaasUnicaPro-Medium";
   src: url("/fonts/NeueHaasUnicaPro-Medium.ttf") format("truetype");
 }
+
+@font-face {
+  font-family: "WantedSans-Medium";
+  src: url("/fonts/WantedSans-Medium.otf") format("opentype");
+}
+
+
 .navigator-hand {
-  font-family: "navigator-hand", sans-serif;
+  font-family: "WantedSans-Medium", sans-serif;
 }
 .f1 {
   font-family: "OldschoolGrotesk-NormalExtraBold", sans-serif;

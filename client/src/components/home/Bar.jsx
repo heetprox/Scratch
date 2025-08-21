@@ -10,6 +10,7 @@ import Notification from '../icons/Notification'
 import Hover from '../placeholder/Hover'
 
 import React, { useState, useEffect } from 'react'
+import Home from '../icons/Home'
 const Bar = () => {
 
     return (
@@ -31,6 +32,11 @@ const Bar = () => {
 
 
                 <div className="w-full flex flex-col gap-6">
+
+                    <Hover text='home'>
+                        <Home />
+                    </Hover>
+
                     <Hover text='create a post'>
                         <Plus />
                     </Hover>
