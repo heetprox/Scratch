@@ -58,6 +58,7 @@ contract Scratch is ReentrancyGuard {
             paymentId
         );
     }
+
     function updateFee(uint256 _newFee) external {
         require(msg.sender == owner, "Only owner");
         require(_newFee <= 1000, "Max 10% fee");
