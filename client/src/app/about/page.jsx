@@ -21,7 +21,7 @@ const AboutPage = () => {
             to build meaningful connections with their audience while maintaining full control over their content and earnings.
           </p>
 
-
+          
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           <div className="bg-gray-900 p-6 rounded-xl">
@@ -31,6 +31,7 @@ const AboutPage = () => {
               Connect your crypto wallet and receive payments directly, with no platform fees or delays.
             </p>
           </div>
+          
           <div className="bg-gray-900 p-6 rounded-xl">
             <CreditCard className="w-12 h-12 text-[#7A78FF] mb-4" />
             <h3 className="text-xl font-semibold mb-3">Multiple Networks</h3>
