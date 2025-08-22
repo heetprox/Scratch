@@ -13,9 +13,6 @@ contract Scratch is ReentrancyGuard {
         bytes32 indexed paymentId
     );
 
-
-
-
     uint256 public platformFee = 0; // for now
     uint256 private paymentCounter;
     address public owner;
