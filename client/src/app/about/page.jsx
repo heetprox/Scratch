@@ -39,6 +39,8 @@ const AboutPage = () => {
               Support for Ethereum, Polygon, Arbitrum, Optimism, and more networks to come.
             </p>
           </div>
+
+          
           
           <div className="bg-gray-900 p-6 rounded-xl">
             <Shield className="w-12 h-12 text-[#7A78FF] mb-4" />
